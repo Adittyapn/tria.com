@@ -1,6 +1,6 @@
-@extends("layouts.app")
+@extends('layouts.app')
 
-@section("content")
+@section('content')
     <!-- Hero Carousel Section -->
     <section
         class="relative h-screen overflow-hidden"
@@ -82,7 +82,7 @@
                 >
                     @php
                         $svg = "<svg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><g fill='none' fill-rule='evenodd'><g fill='#ffffff' fill-opacity='0.4'><path d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/></g></g></svg>";
-                        $bgPattern = "data:image/svg+xml," . rawurlencode($svg);
+                        $bgPattern = 'data:image/svg+xml,' . rawurlencode($svg);
                     @endphp
 
                     <!-- Background Pattern -->
@@ -584,11 +584,6 @@
                 Wujudkan ide kreatif Anda menjadi produk berkualitas tinggi dengan harga terjangkau
             </p>
             <div class="flex flex-wrap gap-4 justify-center">
-                <button
-                    class="bg-white text-red-600 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
-                >
-                    Mulai Custom Sekarang
-                </button>
                 <button
                     class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-red-600 transition-all"
                 >

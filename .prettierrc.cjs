@@ -6,7 +6,8 @@ module.exports = {
             files: "*.blade.php",
             options: {
                 parser: "blade",
-                singleQuote: false,
+                singleQuote: true,
+                tabWidth: 4,
                 printWidth: 120,
                 wrapAttributes: "preserve",
             },

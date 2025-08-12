@@ -1,17 +1,17 @@
-@extends("layouts.app")
+@extends('layouts.app')
 
-@section("title", "{{ $category->name }} - Tria Digital")
-@section("description", "Jelajahi koleksi {{ $category->name }} berkualitas tinggi dari Tria Digital. {{ $category->description }}")
+@section('title', "{{ $category->name }} - Tria Digital")
+@section('description', "Jelajahi koleksi {{ $category->name }} berkualitas tinggi dari Tria Digital. {{ $category->description }}")
 
-@section("content")
+@section('content')
     <div class="bg-gray-50">
         <!-- Breadcrumb -->
         <div class="bg-white border-b">
             <div class="container mx-auto px-4 py-4">
                 <nav class="flex text-sm text-gray-600">
-                    <a href="{{ route("home") }}" class="hover:text-red-600 transition-colors">Home</a>
+                    <a href="{{ route('home') }}" class="hover:text-red-600 transition-colors">Home</a>
                     <span class="mx-2">></span>
-                    <a href="{{ route("products.index") }}" class="hover:text-red-600 transition-colors">Produk</a>
+                    <a href="{{ route('products.index') }}" class="hover:text-red-600 transition-colors">Produk</a>
                     <span class="mx-2">></span>
                     <span class="text-gray-900">{{ $category->name }}</span>
                 </nav>
@@ -22,7 +22,7 @@
         <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
             @php
                 $svg = "<svg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'><g fill='none' fill-rule='evenodd'><g fill='#ffffff' fill-opacity='0.4'><path d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/></g></g></svg>";
-                $bgPattern = "data:image/svg+xml," . rawurlencode($svg);
+                $bgPattern = 'data:image/svg+xml,' . rawurlencode($svg);
             @endphp
 
             <div class="absolute inset-0 opacity-10" style="background-image: url('{{ $bgPattern }}')"></div>
@@ -469,7 +469,7 @@
                                 Konsultasi WhatsApp
                             </a>
                             <a
-                                href="{{ route("products.index") }}"
+                                href="{{ route('products.index') }}"
                                 class="bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
                             >
                                 Lihat Semua Produk
