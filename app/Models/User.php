@@ -24,4 +24,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+        // Relasi ke Orders
+        public function orders()
+        {
+            return $this->hasMany(Orders::class);
+        }
+        public function verifiedPayments()
+        {
+            return $this->hasMany(Payments::class, 'verified_by');
+        }
 }
