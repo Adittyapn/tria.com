@@ -248,7 +248,7 @@
                 <div class="flex items-center space-x-2">
                     <a
                         href="/login"
-                        class="bg-white text-red-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+                        class="bg-white text-red-600 px-[1.2rem] py-2.5 rounded-lg font-medium hover:bg-gray-100 transition-colors"
                     >
                         Login
                     </a>

@@ -24,3 +24,13 @@ yarn-error.log
 
 .phpstorm.meta.php
 _ide_helper.php
+
+# MCP related files
+CLAUDE.md
+*.mcp
+.mcp/
+.mcp-cache/
+.model-context-protocol/
+mcp.json
+mcp.config.js
+mcp.config.json

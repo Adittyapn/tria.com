@@ -27,7 +27,7 @@
                     <h2 class="text-2xl font-bold text-gray-900 mb-2">Selamat Datang!</h2>
                     <p class="text-gray-600 mb-6">Masuk untuk melanjutkan pesanan Anda</p>
 
-                    <form class="space-y-6" method="POST" action="{{ route('login') }}">
+                    <form class="space-y-6" method="POST" action="{{ filament()->getLoginUrl() }}">
                         @csrf
                         <!-- Email -->
                         <div>

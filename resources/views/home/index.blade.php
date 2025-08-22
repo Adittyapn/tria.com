@@ -171,35 +171,128 @@
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                @php
-                    $categories = [
-                        ['name' => 'Flash Sale', 'color' => 'orange', 'icon' => 'M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z'],
-                        ['name' => 'Label', 'color' => 'blue', 'icon' => 'M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z'],
-                        ['name' => 'Merchandise', 'color' => 'green', 'icon' => 'M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm0 3a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z'],
-                        ['name' => 'Cetak Stiker', 'color' => 'purple', 'icon' => 'M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17z'],
-                        ['name' => 'Stationery', 'color' => 'pink', 'icon' => 'M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4z'],
-                        ['name' => 'Media Promosi', 'color' => 'red', 'icon' => 'M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z'],
-                    ];
-                @endphp
-
-                @foreach ($categories as $category)
-                    <div class="group cursor-pointer">
-                        <div
-                            class="bg-gradient-to-br from-{{ $category['color'] }}-400 to-{{ $category['color'] }}-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
-                        >
-                            <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
-                                <svg
-                                    class="w-8 h-8 text-{{ $category['color'] }}-500"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path d="{{ $category['icon'] }}" />
-                                </svg>
-                            </div>
-                            <h3 class="text-white font-semibold">{{ $category['name'] }}</h3>
+                <!-- Flash Sale -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                    >
+                        <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="w-8 h-8 text-orange-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
                         </div>
+                        <h3 class="text-white font-semibold">Flash Sale</h3>
                     </div>
-                @endforeach
+                </div>
+
+                <!-- Label -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                    >
+                        <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="w-8 h-8 text-blue-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path d="M3 7V3h4l12 12-4 4L3 7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-white font-semibold">Label</h3>
+                    </div>
+                </div>
+
+                <!-- Merchandise -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-gradient-to-br from-green-400 to-green-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                    >
+                        <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="w-8 h-8 text-green-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path d="M20 6H4v12h16V6zM4 10h16" />
+                            </svg>
+                        </div>
+                        <h3 class="text-white font-semibold">Merchandise</h3>
+                    </div>
+                </div>
+
+                <!-- Cetak Stiker -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                    >
+                        <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="w-8 h-8 text-purple-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path d="M4 5a2 2 0 0 1 2-2h7l7 7v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-white font-semibold">Cetak Stiker</h3>
+                    </div>
+                </div>
+
+                <!-- Stationery -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                    >
+                        <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="w-8 h-8 text-pink-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5l4 4-12 12H4v-4l12-12z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-white font-semibold">Stationery</h3>
+                    </div>
+                </div>
+
+                <!-- Media Promosi -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-gradient-to-br from-red-400 to-red-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                    >
+                        <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="w-8 h-8 text-red-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    d="M21 15a2 2 0 0 1-2 2h-4l-4 4v-4H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"
+                                />
+                            </svg>
+                        </div>
+                        <h3 class="text-white font-semibold">Media Promosi</h3>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
