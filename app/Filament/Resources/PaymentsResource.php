@@ -13,7 +13,9 @@ use Filament\Tables\Table;
 class PaymentsResource extends Resource
 {
     protected static ?string $model = Payments::class;
+
     protected static ?string $navigationGroup = 'Transactions';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -50,7 +52,6 @@ class PaymentsResource extends Resource
                     ->image() // kalau file-nya gambar
                     ->maxSize(2048) // max 2MB
                     ->required(),
-                
 
                 Forms\Components\Select::make('payment_status')
                     ->options([
@@ -83,7 +84,7 @@ class PaymentsResource extends Resource
                     ->money('idr')
                     ->sortable(),
 
-                    Tables\Columns\ImageColumn::make('payment_proof')
+                Tables\Columns\ImageColumn::make('payment_proof')
                     ->label('Proof')
                     ->square(),
 

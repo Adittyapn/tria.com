@@ -13,7 +13,9 @@ use Filament\Tables\Table;
 class OrdersResource extends Resource
 {
     protected static ?string $model = Orders::class;
+
     protected static ?string $navigationGroup = 'Transactions';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -131,14 +133,14 @@ class OrdersResource extends Resource
                                                 $set('price', $product->price);
                                                 $quantity = $get('quantity') ?: 1;
                                                 $set('subtotal', $quantity * $product->price);
-                                                
+
                                                 // Update total amount immediately
                                                 self::updateTotalAmount($get, $set);
                                             }
                                         } else {
                                             $set('price', null);
                                             $set('subtotal', null);
-                                            
+
                                             // Update total amount immediately
                                             self::updateTotalAmount($get, $set);
                                         }
@@ -156,7 +158,7 @@ class OrdersResource extends Resource
                                         if ($price && $state) {
                                             $set('subtotal', $state * $price);
                                         }
-                                        
+
                                         // Update total amount immediately
                                         self::updateTotalAmount($get, $set);
                                     }),
@@ -186,14 +188,14 @@ class OrdersResource extends Resource
                                 self::updateTotalAmount($get, $set);
                             })
                             ->deleteAction(
-                                fn(Forms\Components\Actions\Action $action) => $action
+                                fn (Forms\Components\Actions\Action $action) => $action
                                     ->after(function (callable $get, callable $set) {
                                         // Add delay to ensure item is deleted before calculation
                                         self::updateTotalAmount($get, $set);
                                     })
                             )
                             ->addAction(
-                                fn(Forms\Components\Actions\Action $action) => $action
+                                fn (Forms\Components\Actions\Action $action) => $action
                                     ->after(function (callable $get, callable $set) {
                                         self::updateTotalAmount($get, $set);
                                     })
@@ -217,13 +219,13 @@ class OrdersResource extends Resource
             foreach ($items as $item) {
                 // Handle both array format and object format
                 $subtotal = 0;
-                
+
                 if (is_array($item)) {
                     $subtotal = isset($item['subtotal']) ? (float) $item['subtotal'] : 0;
                 } elseif (is_object($item)) {
                     $subtotal = isset($item->subtotal) ? (float) $item->subtotal : 0;
                 }
-                
+
                 if ($subtotal > 0) {
                     $total += $subtotal;
                 }
@@ -231,7 +233,7 @@ class OrdersResource extends Resource
 
             // Set the total amount
             $set('total_amount', $total);
-            
+
         } catch (\Exception $e) {
             // Fallback - set to 0 if there's an error
             $set('total_amount', 0);

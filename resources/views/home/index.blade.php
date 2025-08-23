@@ -423,34 +423,15 @@
                 >
                     Semua Produk
                 </button>
-                <button
-                    @click="filterCategory('sticker')"
-                    :class="activeCategory === 'sticker' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-                    class="px-6 py-3 rounded-full font-medium transition-all"
-                >
-                    Stiker
-                </button>
-                <button
-                    @click="filterCategory('banner')"
-                    :class="activeCategory === 'banner' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-                    class="px-6 py-3 rounded-full font-medium transition-all"
-                >
-                    Banner
-                </button>
-                <button
-                    @click="filterCategory('merchandise')"
-                    :class="activeCategory === 'merchandise' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-                    class="px-6 py-3 rounded-full font-medium transition-all"
-                >
-                    Merchandise
-                </button>
-                <button
-                    @click="filterCategory('card')"
-                    :class="activeCategory === 'card' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-                    class="px-6 py-3 rounded-full font-medium transition-all"
-                >
-                    Kartu Nama
-                </button>
+                @foreach ($categories as $category)
+                    <button
+                        @click="filterCategory('{{ $category->id }}')"
+                        :class="activeCategory === '{{ $category->id }}' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                        class="px-6 py-3 rounded-full font-medium transition-all"
+                    >
+                        {{ $category->name }}
+                    </button>
+                @endforeach
             </div>
 
             <!-- Products Grid -->
@@ -465,16 +446,10 @@
                         x-transition:enter-end="opacity-100 transform scale-100"
                     >
                         <div class="relative">
-                            <img :src="product.image" :alt="product.name" class="w-full h-48 object-cover" />
-                            <span
-                                x-show="product.discount"
-                                class="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold"
-                            >
-                                <span x-text="product.discount + '%'"></span>
-                                OFF
-                            </span>
+                            <img :src="product.image_url" :alt="product.name" class="w-full h-48 object-cover" />
+
                             <button
-                                class="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                                class="absolute bottom-2 right-2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-colors"
                             >
                                 <svg
                                     class="w-5 h-5 text-gray-600"
@@ -495,36 +470,44 @@
                         <div class="p-4">
                             <span
                                 class="text-xs text-gray-500 uppercase tracking-wide"
-                                x-text="product.category"
+                                x-text="product.category_name"
                             ></span>
                             <h3 class="text-lg font-semibold text-gray-900 mt-1 mb-2" x-text="product.name"></h3>
-                            <p class="text-sm text-gray-600 mb-3" x-text="product.description"></p>
+                            <p class="text-sm text-gray-600 mb-3" x-text="product.short_description"></p>
 
                             <div class="flex items-center justify-between mb-3">
                                 <div>
                                     <span
-                                        x-show="product.originalPrice"
+                                        x-show="product.sale_price"
                                         class="text-sm text-gray-500 line-through"
-                                        x-text="'Rp ' + product.originalPrice.toLocaleString('id-ID')"
+                                        x-text="'Rp ' + parseInt(product.price).toLocaleString('id-ID')"
                                     ></span>
                                     <span
                                         class="text-lg font-bold text-red-600"
-                                        x-text="'Rp ' + product.price.toLocaleString('id-ID')"
+                                        x-text="'Rp ' + parseInt(product.price).toLocaleString('id-ID')"
                                     ></span>
                                 </div>
-                                <div class="flex items-center text-yellow-400">
-                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                                        <path
-                                            d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
-                                        />
-                                    </svg>
-                                    <span class="text-sm text-gray-600 ml-1" x-text="product.rating"></span>
+                                <div class="flex items-center">
+                                    <span
+                                        x-show="product.stock_quantity > 0"
+                                        class="text-sm px-2 py-1 bg-green-100 text-green-800 rounded"
+                                    >
+                                        Stok:
+                                        <span x-text="product.stock_quantity"></span>
+                                    </span>
+                                    <span
+                                        x-show="product.stock_quantity <= 0"
+                                        class="text-sm px-2 py-1 bg-red-100 text-red-800 rounded"
+                                    >
+                                        Habis
+                                    </span>
                                 </div>
                             </div>
 
                             <div class="flex gap-2">
                                 <button
-                                    class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors font-medium"
+                                    class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors font-medium disabled:bg-gray-400"
+                                    :disabled="product.stock_quantity <= 0"
                                 >
                                     <svg
                                         class="w-4 h-4 inline mr-1"
@@ -539,10 +522,11 @@
                                             d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                                         />
                                     </svg>
-                                    Beli
+                                    <span x-text="product.stock_quantity > 0 ? 'Beli' : 'Habis'"></span>
                                 </button>
                                 <button
                                     class="bg-gray-200 text-gray-700 p-2 rounded-lg hover:bg-gray-300 transition-colors"
+                                    @click="window.open(`/product/${product.slug}`, '_blank')"
                                 >
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
@@ -566,8 +550,9 @@
             </div>
 
             <!-- Load More Button -->
-            <div class="text-center mt-12">
+            <div class="text-center mt-12" x-show="hasMoreProducts">
                 <button
+                    @click="loadMoreProducts()"
                     class="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                 >
                     Lihat Lebih Banyak
@@ -598,183 +583,49 @@
             return {
                 activeCategory: 'all',
                 products: [
-                    // Sticker Products
+                    @foreach($products as $product)
                     {
-                        id: 1,
-                        name: 'Stiker Vinyl Glossy',
-                        category: 'sticker',
-                        categoryDisplay: 'Stiker',
-                        price: 15000,
-                        originalPrice: 20000,
-                        discount: 25,
-                        image: 'https://via.placeholder.com/300x300/FF6B6B/ffffff?text=Stiker+Vinyl',
-                        description: 'Stiker tahan air berkualitas tinggi',
-                        rating: 4.8,
-                        show: true,
-                    },
-                    {
-                        id: 2,
-                        name: 'Stiker Die Cut Custom',
-                        category: 'sticker',
-                        categoryDisplay: 'Stiker',
-                        price: 25000,
-                        originalPrice: null,
-                        discount: 0,
-                        image: 'https://via.placeholder.com/300x300/4ECDC4/ffffff?text=Die+Cut',
-                        description: 'Potong sesuai bentuk desain',
-                        rating: 4.9,
-                        show: true,
-                    },
-                    {
-                        id: 3,
-                        name: 'Stiker Transparant',
-                        category: 'sticker',
-                        categoryDisplay: 'Stiker',
-                        price: 18000,
-                        originalPrice: null,
-                        discount: 0,
-                        image: 'https://via.placeholder.com/300x300/45B7D1/ffffff?text=Transparant',
-                        description: 'Stiker bening berkualitas',
-                        rating: 4.7,
-                        show: true,
-                    },
-
-                    // Banner Products
-                    {
-                        id: 4,
-                        name: 'X-Banner 60x160cm',
-                        category: 'banner',
-                        categoryDisplay: 'Banner',
-                        price: 125000,
-                        originalPrice: 150000,
-                        discount: 17,
-                        image: 'https://via.placeholder.com/300x300/F7DC6F/000000?text=X-Banner',
-                        description: 'Banner portable untuk event',
-                        rating: 4.6,
-                        show: true,
-                    },
-                    {
-                        id: 5,
-                        name: 'Roll Up Banner',
-                        category: 'banner',
-                        categoryDisplay: 'Banner',
-                        price: 275000,
-                        originalPrice: null,
-                        discount: 0,
-                        image: 'https://via.placeholder.com/300x300/BB8FCE/ffffff?text=Roll+Up',
-                        description: 'Banner premium dengan stand',
-                        rating: 4.8,
-                        show: true,
-                    },
-                    {
-                        id: 6,
-                        name: 'Spanduk Flexi 3x1m',
-                        category: 'banner',
-                        categoryDisplay: 'Banner',
-                        price: 90000,
-                        originalPrice: 120000,
-                        discount: 25,
-                        image: 'https://via.placeholder.com/300x300/85C1E2/ffffff?text=Spanduk',
-                        description: 'Spanduk outdoor tahan cuaca',
-                        rating: 4.5,
-                        show: true,
-                    },
-
-                    // Merchandise Products
-                    {
-                        id: 7,
-                        name: 'Gantungan Kunci Akrilik',
-                        category: 'merchandise',
-                        categoryDisplay: 'Merchandise',
-                        price: 12000,
-                        originalPrice: 15000,
-                        discount: 20,
-                        image: 'https://via.placeholder.com/300x300/F8B739/000000?text=Keychain',
-                        description: 'Custom design double side',
-                        rating: 4.9,
-                        show: true,
-                    },
-                    {
-                        id: 8,
-                        name: 'Tumbler Custom 500ml',
-                        category: 'merchandise',
-                        categoryDisplay: 'Merchandise',
-                        price: 65000,
-                        originalPrice: null,
-                        discount: 0,
-                        image: 'https://via.placeholder.com/300x300/58D68D/ffffff?text=Tumbler',
-                        description: 'Tumbler stainless berkualitas',
-                        rating: 4.7,
-                        show: true,
-                    },
-                    {
-                        id: 9,
-                        name: 'Pin Button 5.8cm',
-                        category: 'merchandise',
-                        categoryDisplay: 'Merchandise',
-                        price: 5000,
-                        originalPrice: null,
-                        discount: 0,
-                        image: 'https://via.placeholder.com/300x300/EC7063/ffffff?text=Pin',
-                        description: 'Pin custom design unik',
-                        rating: 4.8,
-                        show: true,
-                    },
-
-                    // Card Products
-                    {
-                        id: 10,
-                        name: 'Kartu Nama Premium',
-                        category: 'card',
-                        categoryDisplay: 'Kartu Nama',
-                        price: 75000,
-                        originalPrice: 100000,
-                        discount: 25,
-                        image: 'https://via.placeholder.com/300x300/AF7AC5/ffffff?text=Business+Card',
-                        description: 'Art carton 260gsm laminasi',
-                        rating: 4.9,
-                        show: true,
-                    },
-                    {
-                        id: 11,
-                        name: 'ID Card PVC',
-                        category: 'card',
-                        categoryDisplay: 'Kartu Nama',
-                        price: 15000,
-                        originalPrice: null,
-                        discount: 0,
-                        image: 'https://via.placeholder.com/300x300/5DADE2/ffffff?text=ID+Card',
-                        description: 'Kartu identitas tahan lama',
-                        rating: 4.6,
-                        show: true,
-                    },
-                    {
-                        id: 12,
-                        name: 'Member Card',
-                        category: 'card',
-                        categoryDisplay: 'Kartu Nama',
-                        price: 8000,
-                        originalPrice: 10000,
-                        discount: 20,
-                        image: 'https://via.placeholder.com/300x300/48C9B0/ffffff?text=Member+Card',
-                        description: 'Kartu member dengan barcode',
-                        rating: 4.7,
-                        show: true,
-                    },
+                        id: {{ $product->id }},
+                        name: '{{ addslashes($product->name) }}',
+                        slug: '{{ $product->slug }}',
+                        category_id: {{ $product->category_id ?? 0 }},
+                        category_name: '{{ addslashes($product->category->name ?? "Uncategorized") }}',
+                        price: {{ $product->price }},
+                        sale_price: {{ $product->sale_price ?? 'null' }},
+                        final_price: {{ $product->final_price }},
+                        discount_percentage: {{ $product->sale_price ? round((($product->price - $product->sale_price) / $product->price) * 100) : 0 }},
+                        image_url: '{{ $product->image_url }}',
+                        short_description: '{{ addslashes($product->short_description ?? "") }}',
+                        stock_quantity: {{ $product->stock_quantity ?? 0 }},
+                        is_featured: {{ $product->is_featured ? 'true' : 'false' }},
+                        show: true
+                    }@if(!$loop->last),@endif
+                    @endforeach
                 ],
+                displayedProducts: 8,
                 get filteredProducts() {
-                    return this.products;
+                    let filtered = this.products.filter(product =>
+                        this.activeCategory === 'all' || product.category_id == this.activeCategory
+                    );
+
+                    return filtered.slice(0, this.displayedProducts).map(product => ({
+                        ...product,
+                        show: true
+                    }));
+                },
+                get hasMoreProducts() {
+                    let filtered = this.products.filter(product =>
+                        this.activeCategory === 'all' || product.category_id == this.activeCategory
+                    );
+                    return filtered.length > this.displayedProducts;
                 },
                 filterCategory(category) {
                     this.activeCategory = category;
-                    this.products.forEach((product) => {
-                        if (category === 'all') {
-                            product.show = true;
-                        } else {
-                            product.show = product.category === category;
-                        }
-                    });
+                    this.displayedProducts = 8;
                 },
+                loadMoreProducts() {
+                    this.displayedProducts += 8;
+                }
             };
         }
     </script>

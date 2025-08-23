@@ -17,23 +17,23 @@ class ItemsRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('product_id')
-                ->label('Product')
-                ->relationship('product', 'name')
-                ->searchable()
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                    if ($state) {
-                        $product = \App\Models\Product::find($state);
-                        if ($product) {
-                            $set('price', $product->price);
-                            $set('subtotal', $get('quantity') * $product->price);
+                    ->label('Product')
+                    ->relationship('product', 'name')
+                    ->searchable()
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        if ($state) {
+                            $product = \App\Models\Product::find($state);
+                            if ($product) {
+                                $set('price', $product->price);
+                                $set('subtotal', $get('quantity') * $product->price);
+                            }
+                        } else {
+                            $set('price', null);
+                            $set('subtotal', null);
                         }
-                    } else {
-                        $set('price', null);
-                        $set('subtotal', null);
-                    }
-                }),
+                    }),
                 Forms\Components\TextInput::make('quantity')
                     ->numeric()
                     ->default(1)
@@ -43,14 +43,13 @@ class ItemsRelationManager extends RelationManager
                         $set('subtotal', $state * $get('price'));
                     }),
 
-
-                    Forms\Components\TextInput::make('price')
+                Forms\Components\TextInput::make('price')
                     ->numeric()
                     ->disabled()
                     ->dehydrated(true)
                     ->required(),
 
-                    Forms\Components\TextInput::make('subtotal')
+                Forms\Components\TextInput::make('subtotal')
                     ->numeric()
                     ->disabled()
                     ->dehydrated(true) // biar tetep ke-save walau disabled

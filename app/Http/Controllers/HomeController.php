@@ -1,29 +1,43 @@
 <?php
 
-// app/Http/Controllers/HomeController.php
-
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Product;
+use App\Models\Category;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        // Ambil produk featured (maksimal 8)
-        $featuredProducts = Product::with('category')
-            ->where('is_featured', true)
+        // Ambil produk aktif dengan kategori
+        $products = Product::with('category')
             ->where('is_active', true)
-            ->limit(8)
+            ->orderBy('is_featured', 'desc') // Produk featured di atas
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        // Ambil semua kategori aktif
+        // Ambil kategori untuk filter
         $categories = Category::where('is_active', true)
-            ->withCount('products')
-            ->orderBy('sort_order')
+            ->orderBy('name')
             ->get();
 
-        return view('home.index', compact('featuredProducts', 'categories'));
+        return view('home.index', compact('products', 'categories'));
+    }
+
+    // API endpoint untuk AJAX filter (opsional)
+    public function getProductsByCategory(Request $request)
+    {
+        $categoryId = $request->get('category_id');
+
+        $query = Product::with('category')->where('is_active', true);
+
+        if ($categoryId && $categoryId !== 'all') {
+            $query->where('category_id', $categoryId);
+        }
+
+        $products = $query->get();
+
+        return response()->json($products);
     }
 }
