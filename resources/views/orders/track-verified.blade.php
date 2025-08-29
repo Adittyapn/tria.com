@@ -1,0 +1,1211 @@
+@extends('layouts.app')
+
+@section('title', 'Tracking Order - ' . $order->order_number)
+
+@section('content')
+    <div class="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-indigo-100 py-8 px-4">
+        <div class="max-w-5xl mx-auto">
+            <!-- Success Verification Banner -->
+            <div class="mb-6 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl shadow-lg p-6 text-white">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                            ></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h2 class="text-lg font-bold">Email Terverifikasi</h2>
+                        <p class="text-emerald-100 text-sm">Anda memiliki akses penuh ke order ini selama 1 jam</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Section -->
+            <div class="text-center mb-8">
+                <div
+                    class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-4 shadow-lg"
+                >
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2-2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                        ></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Tracking Order</h1>
+                <p class="text-xl font-mono font-semibold text-blue-600 mb-1">{{ $order->order_number }}</p>
+                <p class="text-gray-600">
+                    Dibuat {{ $order->created_at->format('d M Y, H:i') }} • Customer: {{ $order->customer->name }}
+                </p>
+            </div>
+
+            <!-- Flash Messages -->
+            @if (session('success'))
+                <div class="mb-6 bg-green-50 border border-green-200 rounded-xl p-4">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            ></path>
+                        </svg>
+                        <span class="text-green-800 font-medium">{{ session('success') }}</span>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            ></path>
+                        </svg>
+                        <span class="text-red-800 font-medium">{{ session('error') }}</span>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Status Banner -->
+            <div class="mb-8">
+                @php
+                    $statusConfig = [
+                        'pending_payment' => ['bg' => 'bg-yellow-50 border-yellow-200', 'text' => 'text-yellow-800', 'icon' => 'clock'],
+                        'paid' => ['bg' => 'bg-blue-50 border-blue-200', 'text' => 'text-blue-800', 'icon' => 'check-circle'],
+                        'processing' => ['bg' => 'bg-purple-50 border-purple-200', 'text' => 'text-purple-800', 'icon' => 'cog'],
+                        'ready' => ['bg' => 'bg-indigo-50 border-indigo-200', 'text' => 'text-indigo-800', 'icon' => 'package'],
+                        'shipped' => ['bg' => 'bg-green-50 border-green-200', 'text' => 'text-green-800', 'icon' => 'truck'],
+                        'completed' => ['bg' => 'bg-emerald-50 border-emerald-200', 'text' => 'text-emerald-800', 'icon' => 'check-double'],
+                        'cancelled' => ['bg' => 'bg-red-50 border-red-200', 'text' => 'text-red-800', 'icon' => 'x-circle'],
+                    ];
+                    $currentStatus = $statusConfig[$order->status] ?? $statusConfig['pending_payment'];
+                @endphp
+
+                <div class="{{ $currentStatus['bg'] }} border {{ $currentStatus['text'] }} rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <!-- Icon -->
+
+                            @switch($currentStatus['icon'])
+                                @case('clock')
+                                    <svg class="w-8 h-8 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        ></path>
+                                    </svg>
+
+                                    @break
+                                @case('check-circle')
+                                    <svg class="w-8 h-8 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        ></path>
+                                    </svg>
+
+                                    @break
+                                @case('cog')
+                                    <svg
+                                        class="w-8 h-8 mr-4 animate-spin"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                                        ></path>
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                        ></path>
+                                    </svg>
+
+                                    @break
+                                    <!-- Tambahkan icon lain sesuai sebelumnya -->
+                            @endswitch
+
+                            <div>
+                                <h2 class="text-2xl font-bold">{{ $order->status_label }}</h2>
+                                <p class="text-base opacity-90 mt-1">
+                                    @switch($order->status)
+                                        @case('pending_payment')
+                                            Menunggu konfirmasi pembayaran dari Anda
+
+                                            @break
+                                        @case('paid')
+                                            Pembayaran dikonfirmasi, pesanan masuk antrian produksi
+
+                                            @break
+                                        @case('processing')
+                                            Tim kami sedang memproses pesanan Anda
+
+                                            @break
+                                        @case('ready')
+                                            Pesanan sudah siap dan akan segera dikirim
+
+                                            @break
+                                        @case('shipped')
+                                            Pesanan sedang dalam perjalanan ke alamat tujuan
+
+                                            @break
+                                        @case('completed')
+                                            Pesanan telah selesai dan diterima dengan baik
+
+                                            @break
+                                        @case('cancelled')
+                                            Pesanan dibatalkan
+
+                                            @break
+                                    @endswitch
+                                </p>
+
+                                <!-- Info Bank Jika Pending Payment -->
+                                @if ($order->status === 'pending_payment' && ! $order->payment_proof)
+                                    <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <h3 class="font-semibold text-lg mb-2">Informasi Transfer</h3>
+                                        <p class="text-base opacity-90">
+                                            Bank:
+                                            <span class="font-medium">{{ $order->bank_name ?? 'BCA' }}</span>
+                                            <br />
+                                            Nomor Rekening:
+                                            <span class="font-medium">
+                                                {{ $order->bank_account ?? '123-456-7890' }}
+                                            </span>
+                                            <br />
+                                            Atas Nama:
+                                            <span class="font-medium">
+                                                {{ $order->account_holder ?? 'PT Contoh Nama' }}
+                                            </span>
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-3">
+                            @if ($order->status === 'pending_payment' && ! $order->payment_proof)
+                                <button
+                                    onclick="openUploadModal()"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                >
+                                    <svg
+                                        class="w-5 h-5 inline mr-2"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                        ></path>
+                                    </svg>
+                                    Upload Bukti Bayar
+                                </button>
+                            @endif
+
+                            @if (in_array($order->status, ['pending_payment', 'paid']))
+                                <button
+                                    onclick="openCancelModal()"
+                                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                >
+                                    <svg
+                                        class="w-5 h-5 inline mr-2"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        ></path>
+                                    </svg>
+                                    Batalkan Order
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Main Content -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Progress Timeline -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                            <svg
+                                class="w-6 h-6 mr-3 text-blue-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                ></path>
+                            </svg>
+                            Progress Pesanan
+                        </h3>
+
+                        <div class="space-y-4">
+                            @foreach ($trackingSteps as $stepKey => $step)
+                                @if (! isset($step['is_cancelled']))
+                                    <div class="flex items-start space-x-4 relative">
+                                        <!-- Timeline Line -->
+                                        @if (! $loop->last)
+                                            <div
+                                                class="absolute left-6 top-12 w-0.5 h-16 {{ $step['completed'] ? 'bg-blue-300' : 'bg-gray-200' }}"
+                                            ></div>
+                                        @endif
+
+                                        <!-- Step Icon -->
+                                        <div
+                                            class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center {{ $step['completed'] ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500' }} transition-all duration-300"
+                                        >
+                                            @switch($step['icon'])
+                                                @case('clock')
+                                                    <svg
+                                                        class="w-6 h-6"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                        ></path>
+                                                    </svg>
+
+                                                    @break
+                                                @case('check-circle')
+                                                    <svg
+                                                        class="w-6 h-6"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                        ></path>
+                                                    </svg>
+
+                                                    @break
+                                                @case('cog')
+                                                    <svg
+                                                        class="w-6 h-6 {{ $step['completed'] ? 'animate-spin-slow' : '' }}"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                                                        ></path>
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                                        ></path>
+                                                    </svg>
+
+                                                    @break
+                                                @case('package')
+                                                    <svg
+                                                        class="w-6 h-6"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                                                        ></path>
+                                                    </svg>
+
+                                                    @break
+                                                @case('truck')
+                                                    <svg
+                                                        class="w-6 h-6"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                                                        ></path>
+                                                    </svg>
+
+                                                    @break
+                                                @case('check-double')
+                                                    <svg
+                                                        class="w-6 h-6"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M5 13l4 4L19 7"
+                                                        ></path>
+                                                    </svg>
+
+                                                    @break
+                                            @endswitch
+                                        </div>
+
+                                        <!-- Step Content -->
+                                        <div class="flex-1 pb-8">
+                                            <h4 class="font-semibold text-gray-900 text-lg">{{ $step['label'] }}</h4>
+                                            <p class="text-gray-600 text-sm mt-1">{{ $step['description'] }}</p>
+
+                                            @if ($step['completed'] && $stepKey === $order->status)
+                                                <div class="mt-2 flex items-center text-xs text-blue-600">
+                                                    <div
+                                                        class="w-2 h-2 bg-blue-600 rounded-full mr-2 animate-pulse"
+                                                    ></div>
+                                                    Status saat ini
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+
+                            <!-- Cancelled Status -->
+                            @if ($order->status === 'cancelled')
+                                <div class="flex items-start space-x-4 relative">
+                                    <div
+                                        class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-red-600 text-white"
+                                    >
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"
+                                            ></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-red-900 text-lg">Pesanan Dibatalkan</h4>
+                                        <p class="text-red-700 text-sm mt-1">Pesanan telah dibatalkan</p>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                            <svg
+                                class="w-6 h-6 mr-3 text-blue-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                ></path>
+                            </svg>
+                            Item Pesanan
+                        </h3>
+
+                        <div class="space-y-4">
+                            @foreach ($order->items as $item)
+                                <div
+                                    class="flex items-start space-x-4 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:bg-gray-100 transition-colors"
+                                >
+                                    <!-- Product Image Placeholder -->
+                                    <div
+                                        class="flex-shrink-0 w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center"
+                                    >
+                                        @if ($item->product->image_url)
+                                            <img
+                                                src="{{ $item->product->image_url }}"
+                                                alt="{{ $item->product->name }}"
+                                                class="w-full h-full object-cover rounded-lg"
+                                            />
+                                        @else
+                                            <svg
+                                                class="w-8 h-8 text-gray-500"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                ></path>
+                                            </svg>
+                                        @endif
+                                    </div>
+
+                                    <!-- Product Details -->
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="font-semibold text-gray-900 text-lg">{{ $item->product->name }}</h4>
+                                        <div class="mt-2 grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p class="text-sm text-gray-600">
+                                                    Jumlah:
+                                                    <span class="font-medium">{{ $item->quantity }} pcs</span>
+                                                </p>
+                                                @if ($item->custom_size)
+                                                    <p class="text-sm text-gray-600">
+                                                        Ukuran:
+                                                        <span class="font-medium">{{ $item->custom_size }}</span>
+                                                    </p>
+                                                @endif
+                                            </div>
+                                            <div>
+                                                @if ($item->selected_material)
+                                                    <p class="text-sm text-gray-600">
+                                                        Material:
+                                                        <span class="font-medium">{{ $item->selected_material }}</span>
+                                                    </p>
+                                                @endif
+
+                                                @if ($item->selected_finishing)
+                                                    <p class="text-sm text-gray-600">
+                                                        Finishing:
+                                                        <span class="font-medium">
+                                                            {{ $item->selected_finishing }}
+                                                        </span>
+                                                    </p>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        @if ($item->design_notes)
+                                            <div class="mt-3 p-3 bg-white rounded-lg border">
+                                                <p class="text-sm text-gray-700">
+                                                    <strong>Catatan Design:</strong>
+                                                    {{ $item->design_notes }}
+                                                </p>
+                                            </div>
+                                        @endif
+
+                                        <div class="mt-3 flex flex-wrap gap-2">
+                                            @if ($item->requires_design_service)
+                                                <span
+                                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+                                                >
+                                                    <svg
+                                                        class="w-3 h-3 mr-1"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v1m0 0h6m-6 0V3m6 0a2 2 0 012 2v1M9 7h6m0 0v2M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M9 7v10a2 2 0 002 2h2a2 2 0 002-2V7m-6 0h6"
+                                                        ></path>
+                                                    </svg>
+                                                    Jasa Design
+                                                </span>
+                                            @endif
+
+                                            @if ($item->hasDesignFile())
+                                                <a
+                                                    href="{{ route('orders.download-design', ['orderNumber' => $order->order_number, 'item' => $item->id]) }}"
+                                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
+                                                >
+                                                    <svg
+                                                        class="w-3 h-3 mr-1"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707v6.586a2 2 0 01-2 2z"
+                                                        ></path>
+                                                    </svg>
+                                                    Download File
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Shipping Info -->
+                    @if ($order->tracking_number)
+                        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <svg
+                                    class="w-6 h-6 mr-3 text-green-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                                    ></path>
+                                </svg>
+                                Info Pengiriman
+                            </h3>
+
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Kurir & Layanan</p>
+                                    <p class="font-semibold text-gray-900 text-lg">
+                                        {{ $order->shipping_service_display }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">No. Resi</p>
+                                    <p class="font-mono font-semibold text-green-600 text-lg">
+                                        {{ $order->tracking_number }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            @if ($order->shipping_etd)
+                                <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                    <p class="text-sm text-green-800">
+                                        <strong>Estimasi Tiba:</strong>
+                                        {{ $order->shipping_etd }} hari kerja
+                                    </p>
+                                </div>
+                            @endif
+
+                            @if ($order->shipped_at)
+                                <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <p class="text-sm text-blue-800">
+                                        <strong>Tanggal Kirim:</strong>
+                                        {{ $order->shipped_at->format('d M Y, H:i') }}
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Customer Info -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <svg
+                                class="w-5 h-5 mr-2 text-blue-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                ></path>
+                            </svg>
+                            Info Customer
+                        </h3>
+
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-sm text-gray-600">Nama Lengkap</p>
+                                <p class="font-medium text-gray-900">{{ $order->customer->name }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-sm text-gray-600">Email</p>
+                                <p class="font-medium text-gray-900">{{ $order->customer->email }}</p>
+                            </div>
+
+                            @if ($order->customer->phone)
+                                <div>
+                                    <p class="text-sm text-gray-600">Telepon</p>
+                                    <p class="font-medium text-gray-900">{{ $order->customer->phone }}</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Shipping Address -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <svg
+                                class="w-5 h-5 mr-2 text-blue-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                ></path>
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                ></path>
+                            </svg>
+                            Alamat Pengiriman
+                        </h3>
+
+                        <div class="text-gray-900">
+                            <p class="leading-relaxed">{{ $order->full_shipping_address }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <svg
+                                class="w-5 h-5 mr-2 text-blue-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                ></path>
+                            </svg>
+                            Ringkasan Order
+                        </h3>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Subtotal Item</span>
+                                <span class="font-medium">
+                                    Rp {{ number_format($order->subtotal_items, 0, ',', '.') }}
+                                </span>
+                            </div>
+
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Ongkos Kirim</span>
+                                <span class="font-medium">
+                                    Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}
+                                </span>
+                            </div>
+
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">PPN (11%)</span>
+                                <span class="font-medium">
+                                    Rp {{ number_format($order->tax_amount, 0, ',', '.') }}
+                                </span>
+                            </div>
+
+                            <hr class="border-gray-200" />
+
+                            <div class="flex justify-between text-lg font-bold">
+                                <span class="text-gray-900">Total</span>
+                                <span class="text-blue-600">
+                                    Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Status -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <svg
+                                class="w-5 h-5 mr-2 text-blue-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                                ></path>
+                            </svg>
+                            Status Pembayaran
+                        </h3>
+
+                        @php
+                            $paymentConfig = [
+                                'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'border' => 'border-yellow-200'],
+                                'verified' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'border' => 'border-green-200'],
+                                'rejected' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'border' => 'border-red-200'],
+                            ];
+                            $paymentStyle = $paymentConfig[$order->payment_status] ?? $paymentConfig['pending'];
+                        @endphp
+
+                        <div
+                            class="{{ $paymentStyle['bg'] }} {{ $paymentStyle['border'] }} {{ $paymentStyle['text'] }} border rounded-lg p-4 text-center"
+                        >
+                            <p class="font-semibold text-lg">{{ $order->payment_status_label }}</p>
+                        </div>
+
+                        @if ($order->payment_proof)
+                            <div class="mt-4 p-3 bg-gray-50 rounded-lg border">
+                                <p class="text-sm text-gray-700 flex items-center">
+                                    <svg
+                                        class="w-4 h-4 mr-2 text-green-600"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        ></path>
+                                    </svg>
+                                    Bukti pembayaran sudah diupload
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Payment Modal -->
+    <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">Upload Bukti Pembayaran</h3>
+                    <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            ></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form
+                    id="uploadForm"
+                    method="POST"
+                    action="{{ route('orders.upload-payment', $order->order_number) }}"
+                    enctype="multipart/form-data"
+                >
+                    @csrf
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">File Bukti Pembayaran</label>
+                            <div
+                                class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors"
+                            >
+                                <input
+                                    type="file"
+                                    id="payment_proof"
+                                    name="payment_proof"
+                                    accept=".jpg,.jpeg,.png,.pdf"
+                                    required
+                                    class="hidden"
+                                />
+                                <label for="payment_proof" class="cursor-pointer">
+                                    <svg
+                                        class="w-12 h-12 text-gray-400 mx-auto mb-2"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                        ></path>
+                                    </svg>
+                                    <p class="text-sm text-gray-600">Klik untuk pilih file</p>
+                                    <p class="text-xs text-gray-500 mt-1">JPG, PNG, PDF (max 5MB)</p>
+                                </label>
+                            </div>
+                            <div id="fileName" class="text-sm text-gray-600 mt-2 hidden"></div>
+                        </div>
+
+                        <div>
+                            <label for="payment_notes" class="block text-sm font-medium text-gray-700 mb-2">
+                                Catatan (Opsional)
+                            </label>
+                            <textarea
+                                id="payment_notes"
+                                name="payment_notes"
+                                rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Tambahkan catatan jika diperlukan..."
+                            ></textarea>
+                        </div>
+
+                        <div class="flex space-x-3 pt-4">
+                            <button
+                                type="button"
+                                onclick="closeUploadModal()"
+                                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                            >
+                                Upload
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Order Modal -->
+    <div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-red-900">Batalkan Pesanan</h3>
+                    <button onclick="closeCancelModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            ></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <p class="text-red-800 text-sm">
+                        ⚠️ Pesanan yang sudah dibatalkan tidak dapat dikembalikan. Pastikan keputusan Anda.
+                    </p>
+                </div>
+
+                <form id="cancelForm" method="POST" action="{{ route('orders.cancel', $order->order_number) }}">
+                    @csrf
+                    <div class="space-y-4">
+                        <div>
+                            <label for="cancellation_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                                Alasan Pembatalan
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <textarea
+                                id="cancellation_reason"
+                                name="cancellation_reason"
+                                rows="4"
+                                required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                placeholder="Jelaskan alasan Anda membatalkan pesanan ini..."
+                            ></textarea>
+                        </div>
+
+                        <div class="flex space-x-3 pt-4">
+                            <button
+                                type="button"
+                                onclick="closeCancelModal()"
+                                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                            >
+                                Ya, Batalkan
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal animations */
+        .modal-enter {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        .modal-leave {
+            animation: modalFadeOut 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes modalFadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+        }
+
+        /* File upload styles */
+        .file-drag-over {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        /* Loading states */
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-loading::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            margin-left: 8px;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Success animations */
+        @keyframes checkmark {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .animate-checkmark {
+            animation: checkmark 0.6s ease-out;
+        }
+    </style>
+
+    <script>
+        // Modal Management
+        function openUploadModal() {
+            const modal = document.getElementById('uploadModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex', 'modal-enter');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeUploadModal() {
+            const modal = document.getElementById('uploadModal');
+            modal.classList.add('modal-leave');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex', 'modal-enter', 'modal-leave');
+                document.body.classList.remove('overflow-hidden');
+            }, 300);
+        }
+
+        function openCancelModal() {
+            const modal = document.getElementById('cancelModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex', 'modal-enter');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeCancelModal() {
+            const modal = document.getElementById('cancelModal');
+            modal.classList.add('modal-leave');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex', 'modal-enter', 'modal-leave');
+                document.body.classList.remove('overflow-hidden');
+            }, 300);
+        }
+
+        // File Upload Enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('payment_proof');
+            const fileNameDiv = document.getElementById('fileName');
+            const dropArea = fileInput.closest('.border-dashed');
+
+            // File selection handler
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    fileNameDiv.textContent = `📄 ${file.name} (${formatFileSize(file.size)})`;
+                    fileNameDiv.classList.remove('hidden');
+                    dropArea.classList.add('border-blue-300', 'bg-blue-50');
+                }
+            });
+
+            // Drag and drop
+            dropArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropArea.classList.add('file-drag-over');
+            });
+
+            dropArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                dropArea.classList.remove('file-drag-over');
+            });
+
+            dropArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropArea.classList.remove('file-drag-over');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    fileInput.dispatchEvent(new Event('change'));
+                }
+            });
+
+            // Form submissions with loading states
+            const uploadForm = document.getElementById('uploadForm');
+            const cancelForm = document.getElementById('cancelForm');
+
+            uploadForm.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.classList.add('btn-loading');
+                submitBtn.textContent = 'Mengupload...';
+            });
+
+            cancelForm.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.classList.add('btn-loading');
+                submitBtn.textContent = 'Membatalkan...';
+            });
+
+            // Close modal on outside click
+            document.getElementById('uploadModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeUploadModal();
+                }
+            });
+
+            document.getElementById('cancelModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeCancelModal();
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeUploadModal();
+                    closeCancelModal();
+                }
+            });
+
+            // Auto-refresh for active orders (every 2 minutes)
+            @if(in_array($order->status, ['paid', 'processing', 'ready', 'shipped']))
+                setInterval(function() {
+                    if (!document.hidden) {
+                        // Don't refresh if modal is open
+                        const modalsOpen = !document.getElementById('uploadModal').classList.contains('hidden') ||
+                                          !document.getElementById('cancelModal').classList.contains('hidden');
+                        if (!modalsOpen) {
+                            window.location.reload();
+                        }
+                    }
+                }, 120000); // 2 minutes
+            @endif
+        });
+
+        // Utility function
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Success animation trigger
+        @if(session('success'))
+            setTimeout(function() {
+                const successIcon = document.querySelector('.text-green-600');
+                if (successIcon) {
+                    successIcon.classList.add('animate-checkmark');
+                }
+            }, 100);
+        @endif
+    </script>
+@endsection

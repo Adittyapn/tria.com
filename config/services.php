@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+        'rajaongkir' => [
+        'base_url' => env('RAJAONGKIR_BASE_URL', 'https://rajaongkir.komerce.id/api/v1'),
+        'shipping_cost_key' => env('RAJAONGKIR_SHIPPING_COST_KEY'),
+        'shipping_delivery_key' => env('RAJAONGKIR_SHIPPING_DELIVERY_KEY'),
+        'origin_city_id' => env('RAJAONGKIR_ORIGIN_CITY_ID', 632), // Default: Bandung
+        'timeout' => env('RAJAONGKIR_TIMEOUT', 30),
+        'origin_district_id' => env('RAJAONGKIR_ORIGIN_DISTRICT_ID', 6536),
+    ],
+
 ];
