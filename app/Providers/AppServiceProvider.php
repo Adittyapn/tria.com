@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function register(): void
     {
+            $this->app->singleton(RajaOngkirService::class, function ($app) {
+        return new RajaOngkirService();
+    });
         // TAMBAHKAN KODE INI
         $this->app->bind(
             \Filament\Http\Responses\Auth\Contracts\LogoutResponse::class,

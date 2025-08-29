@@ -35,4 +35,39 @@ class ProductController extends Controller
 
         return view('product.index', compact('products'));
     }
+
+    public function calculatePrice(Request $request, Product $product)
+    {
+        try {
+            // Validasi input dari frontend
+            $validatedData = $request->validate([
+                'quantity' => 'required|integer|min:1',
+                'custom_size.width' => 'nullable|numeric',
+                'custom_size.length' => 'nullable|numeric',
+                'material' => 'nullable|string',
+                'finishing' => 'nullable|array',
+                'design_service' => 'nullable|boolean',
+            ]);
+
+            // Panggil method yang sudah ada di model Product
+            $priceDetails = $product->calculatePrice($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'data' => $priceDetails
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data input tidak valid.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghitung harga: ' . $e->getMessage()
+            ], 400);
+        }
+    }
 }

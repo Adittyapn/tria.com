@@ -375,7 +375,11 @@
                         x-transition:enter-end="opacity-100 transform scale-100"
                     >
                         <div class="relative">
-                            <img :src="product.image_url" :alt="product.name" class="w-full h-48 object-cover" />
+                            <img
+                                :src="product.featured_image ?? (product.gallery_images?.[0] ?? '/default.jpg')"
+                                :alt="product.name"
+                                class="w-full h-48 object-cover"
+                            />
 
                             <button
                                 class="absolute bottom-2 right-2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-colors"
@@ -399,21 +403,25 @@
                         <div class="p-4">
                             <span
                                 class="text-xs text-gray-500 uppercase tracking-wide"
-                                x-text="product.category_name"
+                                x-text="product.category_name ?? 'Umum'"
                             ></span>
+
                             <h3 class="text-lg font-semibold text-gray-900 mt-1 mb-2" x-text="product.name"></h3>
                             <p class="text-sm text-gray-600 mb-3" x-text="product.short_description"></p>
 
                             <div class="flex items-center justify-between mb-3">
                                 <div>
                                     <span
-                                        x-show="product.sale_price"
+                                        x-show="product.promo_price"
                                         class="text-sm text-gray-500 line-through"
-                                        x-text="'Rp ' + parseInt(product.price).toLocaleString('id-ID')"
+                                        x-text="'Rp ' + parseInt(product.base_price).toLocaleString('id-ID')"
                                     ></span>
                                     <span
                                         class="text-lg font-bold text-red-600"
-                                        x-text="'Rp ' + parseInt(product.price).toLocaleString('id-ID')"
+                                        x-text="
+                                            'Rp ' +
+                                                parseInt(product.promo_price ?? product.base_price).toLocaleString('id-ID')
+                                        "
                                     ></span>
                                 </div>
                                 <div class="flex items-center">
@@ -591,53 +599,61 @@
             }
 
         function productFilter() {
-            return {
-                activeCategory: 'all',
-                products: [
-                    @foreach($products as $product)
-                    {
-                        id: {{ $product->id }},
-                        name: '{{ addslashes($product->name) }}',
-                        slug: '{{ $product->slug }}',
-                        category_id: {{ $product->category_id ?? 0 }},
-                        category_name: '{{ addslashes($product->category->name ?? "Uncategorized") }}',
-                        price: {{ $product->price }},
-                        sale_price: {{ $product->sale_price ?? 'null' }},
-                        final_price: {{ $product->final_price }},
-                        discount_percentage: {{ $product->sale_price ? round((($product->price - $product->sale_price) / $product->price) * 100) : 0 }},
-                        image_url: '{{ $product->image_url }}',
-                        short_description: '{{ addslashes($product->short_description ?? "") }}',
-                        stock_quantity: {{ $product->stock_quantity ?? 0 }},
-                        is_featured: {{ $product->is_featured ? 'true' : 'false' }},
-                        show: true
-                    }@if(!$loop->last),@endif
-                    @endforeach
-                ],
-                displayedProducts: 8,
-                get filteredProducts() {
-                    let filtered = this.products.filter(product =>
-                        this.activeCategory === 'all' || product.category_id == this.activeCategory
-                    );
+                return {
+                    activeCategory: 'all',
+                    products: [
+                        @foreach($products as $product)
+                        {
+                            id: {{ $product->id }},
+                            name: '{{ addslashes($product->name) }}',
+                            slug: '{{ $product->slug }}',
+                            category_id: {{ $product->category_id ?? 0 }},
+                            category_name: '{{ addslashes($product->category->name ?? "Uncategorized") }}',
 
-                    return filtered.slice(0, this.displayedProducts).map(product => ({
-                        ...product,
-                        show: true
-                    }));
-                },
-                get hasMoreProducts() {
-                    let filtered = this.products.filter(product =>
-                        this.activeCategory === 'all' || product.category_id == this.activeCategory
-                    );
-                    return filtered.length > this.displayedProducts;
-                },
-                filterCategory(category) {
-                    this.activeCategory = category;
-                    this.displayedProducts = 8;
-                },
-                loadMoreProducts() {
-                    this.displayedProducts += 8;
-                }
-            };
-        }
+                            // harga & promo
+                            base_price: {{ $product->base_price ?? 0 }},
+                            promo_price: {{ $product->promo_price ?? 'null' }},
+                            // gambar
+                            image_url: '{{ $product->featured_image ?? asset("images/no-image.png") }}',
+
+                            // deskripsi
+                            short_description: '{{ addslashes($product->short_description ?? "") }}',
+
+                            // stok
+                            stock_quantity: {{ $product->stock_quantity ?? 0 }},
+
+                            // featured
+                            is_featured: {{ $product->is_featured ? 'true' : 'false' }},
+
+                            show: true
+                        }@if(!$loop->last),@endif
+                        @endforeach
+                    ],
+                    displayedProducts: 8,
+                    get filteredProducts() {
+                        let filtered = this.products.filter(product =>
+                            this.activeCategory === 'all' || product.category_id == this.activeCategory
+                        );
+
+                        return filtered.slice(0, this.displayedProducts).map(product => ({
+                            ...product,
+                            show: true
+                        }));
+                    },
+                    get hasMoreProducts() {
+                        let filtered = this.products.filter(product =>
+                            this.activeCategory === 'all' || product.category_id == this.activeCategory
+                        );
+                        return filtered.length > this.displayedProducts;
+                    },
+                    filterCategory(category) {
+                        this.activeCategory = category;
+                        this.displayedProducts = 8;
+                    },
+                    loadMoreProducts() {
+                        this.displayedProducts += 8;
+                    }
+                };
+            }
     </script>
 @endsection

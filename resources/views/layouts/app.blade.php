@@ -2,12 +2,21 @@
 <html lang="id">
     <head>
         <meta charset="UTF-8" />
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>@yield('title', 'Tria Digital - Jasa Cetak Digital Custom')</title>
         <meta
             name="description"
             content="@yield('description', 'Jasa cetak digital custom terpercaya. Stiker, banner, merchandise, dan berbagai produk printing berkualitas tinggi')"
         />
+
+        <!-- SweetAlert2 CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+
+        <!-- SweetAlert2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
