@@ -2,17 +2,28 @@
 
 @section('content')
     <!-- Hero Carousel Section -->
-    <section class="relative h-screen overflow-hidden" x-data="heroCarousel()">
+    <section
+        class="relative h-screen overflow-hidden"
+        x-data="heroCarousel()"
+        @mousemove="showControls = true; resetControlsTimer()"
+        @mouseleave="showControls = false"
+    >
         <!-- Slides Container -->
         <div class="relative h-full">
             <template x-for="(slide, index) in slides" :key="index">
                 <div
                     x-show="currentSlide === index"
-                    x-transition:enter="transition ease-out duration-500"
-                    x-transition:enter-start="opacity-0 transform translate-x-full"
-                    x-transition:enter-end="opacity-100 transform translate-x-0"
-                    class="absolute inset-0 h-full w-full"
-                    :class="`bg-gradient-to-br ${slide.bg}`"
+                    x-transition:enter="transition transform ease-out duration-500"
+                    x-transition:enter-start="translate-x-full"
+                    x-transition:enter-end="translate-x-0"
+                    x-transition:leave="transition transform ease-in duration-500"
+                    x-transition:leave-start="translate-x-0"
+                    x-transition:leave-end="-translate-x-full"
+                    :class="[
+                        'absolute inset-0 h-full w-full transition-transform duration-500',
+                        direction === 'prev' ? 'slide-prev' : 'slide-next',
+                        `bg-gradient-to-br ${slide.bg}`
+                    ]"
                 >
                     <div
                         class="absolute inset-0 opacity-10"
@@ -21,47 +32,61 @@
                         "
                     ></div>
 
-                    <div class="container mx-auto px-4 h-full flex items-center">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
-                            <div class="text-white z-10 space-y-6">
-                                <div>
-                                    <p x-text="slide.subtitle" class="text-lg font-medium text-white/90 mb-2"></p>
+                    <div class="container mx-auto px-4 h-full">
+                        <div class="flex flex-col lg:flex-row items-center justify-between h-full py-16 lg:py-0">
+                            <div class="text-white z-10 space-y-8 max-w-2xl lg:w-1/2 text-center lg:text-left">
+                                <div class="space-y-4">
+                                    <p
+                                        x-text="slide.subtitle"
+                                        class="text-sm md:text-lg font-medium text-white/90 tracking-wider uppercase"
+                                    ></p>
                                     <h1
                                         x-text="slide.title"
-                                        class="text-4xl lg:text-6xl font-bold leading-tight"
+                                        class="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight"
                                     ></h1>
                                 </div>
                                 <p
                                     x-text="slide.description"
-                                    class="text-xl text-white/90 leading-relaxed max-w-lg"
+                                    class="text-base md:text-xl text-white/90 leading-relaxed"
                                 ></p>
-                                <div class="flex flex-col sm:flex-row gap-4">
+                                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                                     <button
                                         x-text="slide.cta"
-                                        class="bg-white text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
+                                        class="bg-white text-gray-900 px-6 py-3 md:px-8 md:py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg text-sm md:text-base"
                                     ></button>
                                     <button
-                                        class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-all"
+                                        class="border-2 border-white text-white px-6 py-3 md:px-8 md:py-4 rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-all text-sm md:text-base"
                                     >
                                         Lihat Portfolio
                                     </button>
                                 </div>
                             </div>
-                            <div class="relative z-10">
-                                <img
-                                    :src="slide.image"
-                                    :alt="slide.title"
-                                    class="rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300"
-                                />
-                                <div class="absolute -top-4 -right-4 bg-white/20 backdrop-blur-sm rounded-xl p-4">
-                                    <div class="flex items-center space-x-2 text-white">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path
-                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                            />
-                                        </svg>
-                                        <span class="font-semibold">4.9</span>
+                            <div class="relative z-10 lg:w-1/2 mt-8 lg:mt-0">
+                                <div class="relative">
+                                    <img
+                                        :src="slide.image"
+                                        :alt="slide.title"
+                                        class="rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300 w-full max-w-lg mx-auto object-cover object-center h-[300px] md:h-[400px] lg:h-[500px]"
+                                    />
+
+                                    <!-- Badge -->
+                                    <div
+                                        class="absolute -top-4 -right-4 bg-white/20 backdrop-blur-sm rounded-xl p-3 md:p-4"
+                                    >
+                                        <div class="flex items-center space-x-2 text-white">
+                                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                                />
+                                            </svg>
+                                            <span class="font-semibold text-sm md:text-base">4.9</span>
+                                        </div>
                                     </div>
+
+                                    <!-- Image Overlay -->
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"
+                                    ></div>
                                 </div>
                             </div>
                         </div>
@@ -73,6 +98,13 @@
         <!-- Navigation -->
         <button
             @click="prevSlide()"
+            x-show="showControls"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
             class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/30 transition-all z-20 group"
         >
             <svg
@@ -86,6 +118,13 @@
         </button>
         <button
             @click="nextSlide()"
+            x-show="showControls"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
             class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/30 transition-all z-20 group"
         >
             <svg
@@ -174,7 +213,7 @@
                 <!-- Flash Sale -->
                 <div class="group cursor-pointer">
                     <div
-                        class="bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                        class="bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl h-full"
                     >
                         <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
                             <svg
@@ -194,7 +233,7 @@
                 <!-- Label -->
                 <div class="group cursor-pointer">
                     <div
-                        class="bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                        class="bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl h-full"
                     >
                         <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
                             <svg
@@ -214,7 +253,7 @@
                 <!-- Merchandise -->
                 <div class="group cursor-pointer">
                     <div
-                        class="bg-gradient-to-br from-green-400 to-green-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                        class="bg-gradient-to-br from-green-400 to-green-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl h-full"
                     >
                         <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
                             <svg
@@ -234,7 +273,7 @@
                 <!-- Cetak Stiker -->
                 <div class="group cursor-pointer">
                     <div
-                        class="bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                        class="bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl h-full"
                     >
                         <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
                             <svg
@@ -254,7 +293,7 @@
                 <!-- Stationery -->
                 <div class="group cursor-pointer">
                     <div
-                        class="bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                        class="bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl h-full"
                     >
                         <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
                             <svg
@@ -275,7 +314,7 @@
                 <!-- Media Promosi -->
                 <div class="group cursor-pointer">
                     <div
-                        class="bg-gradient-to-br from-red-400 to-red-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl"
+                        class="bg-gradient-to-br from-red-400 to-red-500 rounded-xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-xl h-full"
                     >
                         <div class="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
                             <svg
@@ -466,7 +505,91 @@
         </div>
     </section>
 
+    <style>
+        .slide-prev.translate-x-full {
+            transform: translateX(-100%);
+        }
+        .slide-next.translate-x-full {
+            transform: translateX(100%);
+        }
+        .slide-prev.-translate-x-full {
+            transform: translateX(100%);
+        }
+        .slide-next.-translate-x-full {
+            transform: translateX(-100%);
+        }
+    </style>
+
     <script>
+        function heroCarousel() {
+                return {
+                    currentSlide: 0,
+                    direction: 'next',
+                    showControls: false,
+                    controlsTimer: null,
+                    resetControlsTimer() {
+                        if (this.controlsTimer) clearTimeout(this.controlsTimer);
+                        this.controlsTimer = setTimeout(() => {
+                            this.showControls = false;
+                        }, 2000); // akan hide setelah 2 detik tidak ada gerakan mouse
+                    },
+                    slides: [
+                        {
+                            title: 'Solusi Digital Printing Premium',
+                            subtitle: 'Kualitas Profesional',
+                            description:
+                                'Wujudkan visi kreatif Anda dengan teknologi printing terkini. Kami menghadirkan hasil cetak berkualitas tinggi dengan harga yang terjangkau untuk setiap proyek Anda.',
+                            image: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1200&q=80',
+                            bg: 'from-red-600 to-red-800',
+                            cta: 'Mulai Proyek',
+                        },
+                        {
+                            title: 'Merchandise Eksklusif',
+                            subtitle: 'Desain Kustom',
+                            description:
+                                'Ciptakan merchandise yang unik dan berkesan. Dari gantungan kunci hingga produk premium, kami siap mewujudkan ide kreatif Anda dengan kualitas terbaik.',
+                            image: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1200&q=80',
+                            bg: 'from-blue-600 to-blue-800',
+                            cta: 'Eksplorasi Koleksi',
+                        },
+                        {
+                            title: 'Label & Stiker Premium',
+                            subtitle: 'Branding Profesional',
+                            description:
+                                'Tingkatkan identitas brand Anda dengan label dan stiker berkualitas tinggi. Dibuat dengan material terbaik untuk hasil yang tahan lama dan mengesankan.',
+                            image: 'https://images.unsplash.com/photo-1606676539940-12768ce0e762?auto=format&fit=crop&w=1200&q=80',
+                            bg: 'from-purple-600 to-purple-800',
+                            cta: 'Konsultasi Gratis',
+                        },
+                    ],
+                    autoSlide: null,
+                    init() {
+                        this.startAutoSlide();
+                    },
+                    nextSlide() {
+                        this.direction = 'next';
+                        this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+                        this.resetAutoSlide();
+                    },
+                    prevSlide() {
+                        this.direction = 'prev';
+                        this.currentSlide = this.currentSlide === 0 ? this.slides.length - 1 : this.currentSlide - 1;
+                        this.resetAutoSlide();
+                    },
+                    goToSlide(index) {
+                        this.currentSlide = index;
+                        this.resetAutoSlide();
+                    },
+                    startAutoSlide() {
+                        this.autoSlide = setInterval(() => this.nextSlide(), 5000);
+                    },
+                    resetAutoSlide() {
+                        clearInterval(this.autoSlide);
+                        this.startAutoSlide();
+                    },
+                };
+            }
+
         function productFilter() {
             return {
                 activeCategory: 'all',

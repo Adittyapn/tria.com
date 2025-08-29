@@ -19,8 +19,18 @@ class AppServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        //
+        // TAMBAHKAN KODE INI
+        $this->app->bind(
+            \Filament\Http\Responses\Auth\Contracts\LogoutResponse::class,
+            \App\Http\Responses\LogoutResponse::class
+        );
+
+        $this->app->bind(
+            \Filament\Http\Responses\Auth\Contracts\LoginResponse::class,
+            \App\Http\Responses\LoginResponse::class
+        );
     }
+
 
     public function boot(): void
     {
@@ -54,7 +64,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function configureFilament(): void
     {
-        FilamentShield::prohibitDestructiveCommands($this->app->isProduction());
+        FilamentShield::prohibitDestructiveCommands($this->app->environment('production'));
 
         Table::configureUsing(fn (Table $table) => $table->paginationPageOptions([10, 25, 50]));
     }

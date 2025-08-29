@@ -22,7 +22,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read int|null $items_count
  * @property-read \App\Models\Payments|null $payment
  * @property-read \App\Models\User $user
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Orders newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Orders newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Orders query()
@@ -38,7 +37,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Orders whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Orders whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Orders whereUserId($value)
- *
  * @mixin \Eloquent
  */
 class Orders extends Model

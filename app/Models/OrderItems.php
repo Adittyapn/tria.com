@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Orders $order
  * @property-read \App\Models\Product $product
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItems newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItems newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItems query()
@@ -28,7 +27,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItems whereQuantity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItems whereSubtotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItems whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class OrderItems extends Model

@@ -6,6 +6,98 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property string|null $sku
+ * @property int $category_id
+ * @property bool $is_active
+ * @property string|null $short_description
+ * @property string|null $description
+ * @property string|null $featured_image
+ * @property array<array-key, mixed>|null $gallery_images
+ * @property string $price
+ * @property string|null $sale_price
+ * @property string $pricing_type Sistem pricing: per_piece, per_meter_square, per_meter_linear, bulk_tier
+ * @property string $unit_label Label satuan: pcs, m², meter, set, pak, dll
+ * @property bool $has_custom_size Customer bisa input ukuran custom
+ * @property bool $has_size_presets Ada preset ukuran standar
+ * @property array<array-key, mixed>|null $size_presets Array preset ukuran standar
+ * @property array<array-key, mixed>|null $quantity_tiers Tier harga berdasarkan quantity
+ * @property int $minimum_quantity Minimum pembelian
+ * @property int|null $maximum_quantity Maximum pembelian (optional)
+ * @property int $step_quantity Kelipatan order (1 untuk retail, 50 untuk grosir)
+ * @property int $stock_quantity
+ * @property int $minimum_order
+ * @property string $stock_status
+ * @property array<array-key, mixed>|null $specifications
+ * @property array<array-key, mixed>|null $size_variants
+ * @property string|null $file_upload_notes
+ * @property int $max_file_size
+ * @property array<array-key, mixed>|null $allowed_file_types
+ * @property int|null $weight
+ * @property int $production_time
+ * @property bool $requires_design_approval
+ * @property string|null $package_length
+ * @property string|null $package_width
+ * @property string|null $package_height
+ * @property string|null $meta_title
+ * @property string|null $meta_description
+ * @property array<array-key, mixed>|null $tags
+ * @property bool $is_featured
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Category $category
+ * @property-read mixed $final_price
+ * @property-read mixed $image_url
+ * @property-read mixed $pricing_description
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereAllowedFileTypes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereFeaturedImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereFileUploadNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereGalleryImages($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereHasCustomSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereHasSizePresets($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereIsFeatured($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereMaxFileSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereMaximumQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereMetaDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereMetaTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereMinimumOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereMinimumQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product wherePackageHeight($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product wherePackageLength($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product wherePackageWidth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product wherePricingType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProductionTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereQuantityTiers($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereRequiresDesignApproval($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSalePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereShortDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSizePresets($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSizeVariants($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSku($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSpecifications($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereStepQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereStockQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereStockStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereTags($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUnitLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereWeight($value)
+ * @mixin \Eloquent
+ */
 class Product extends Model
 {
     use HasFactory;

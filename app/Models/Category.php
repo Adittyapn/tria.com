@@ -32,7 +32,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Category|null $parent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
  * @property-read int|null $products_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category query()
@@ -58,7 +57,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category whereStandardSizes($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class Category extends Model

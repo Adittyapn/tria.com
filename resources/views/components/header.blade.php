@@ -82,40 +82,53 @@
                 <!-- Mobile Actions -->
                 <div class="flex items-center space-x-2">
                     <!-- User Menu Mobile -->
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="text-white p-2">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    @auth
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="block">
+                                <img
+                                    class="w-8 h-8 rounded-full object-cover"
+                                    src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=random&color=fff' }}"
+                                    alt="{{ Auth::user()->name }}"
                                 />
-                            </svg>
-                        </button>
-
-                        <!-- Mobile User Dropdown -->
-                        <div
-                            x-show="open"
-                            @click.away="open = false"
-                            x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 transform scale-95"
-                            x-transition:enter-end="opacity-100 transform scale-100"
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100 transform scale-100"
-                            x-transition:leave-end="opacity-0 transform scale-95"
-                            x-show="!loading"
-                            x-cloak
-                            class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50"
-                        >
-                            <a href="/login" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 border-b">
-                                Login
-                            </a>
-                            <a href="/register" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100">
-                                Daftar
-                            </a>
+                            </button>
+                            <!-- Mobile User Dropdown -->
+                            <x-user-dropdown />
                         </div>
-                    </div>
+                    @else
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="text-white p-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                    />
+                                </svg>
+                            </button>
+                            <!-- Mobile Guest Dropdown -->
+                            <div
+                                x-show="open"
+                                @click.away="open = false"
+                                x-transition
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50"
+                                x-cloak
+                            >
+                                <a
+                                    href="{{ url('dashboard/login') }}"
+                                    class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 border-b"
+                                >
+                                    Login
+                                </a>
+                                <a
+                                    href="{{ url('dashboard/register') }}"
+                                    class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                                >
+                                    Daftar
+                                </a>
+                            </div>
+                        </div>
+                    @endauth
 
                     <!-- Mobile Cart -->
                     <div class="relative" x-data="{ open: false }">
@@ -245,19 +258,56 @@
                 </div>
 
                 <!-- Header Actions -->
-                <div class="flex items-center space-x-2">
-                    <a
-                        href="/login"
-                        class="bg-white text-red-600 px-[1.2rem] py-2.5 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-                    >
-                        Login
-                    </a>
-                    <a
-                        href="/register"
-                        class="bg-transparent border-2 border-white text-white px-4 py-2 rounded-lg font-medium hover:bg-white hover:text-red-600 transition-colors"
-                    >
-                        Daftar
-                    </a>
+                <div class="flex items-center space-x-4">
+                    @auth
+                        <!-- Authenticated User Dropdown -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button
+                                @click="open = !open"
+                                class="flex items-center space-x-2 bg-white/20 p-2 rounded-lg hover:bg-white/30 transition-colors"
+                            >
+                                <img
+                                    class="w-8 h-8 rounded-full object-cover"
+                                    src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=random&color=fff' }}"
+                                    alt="{{ Auth::user()->name }}"
+                                />
+                                <span class="hidden lg:inline font-medium">
+                                    {{ Str::words(Auth::user()->name, 1, '') }}
+                                </span>
+                                <svg
+                                    class="w-4 h-4 hidden lg:inline transition-transform"
+                                    :class="{'rotate-180': open}"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 9l-7 7-7-7"
+                                    ></path>
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <x-user-dropdown />
+                        </div>
+                    @else
+                        <!-- Guest Buttons -->
+                        <a
+                            href="{{ url('dashboard/login') }}"
+                            class="bg-white text-red-600 px-[1.2rem] py-2.5 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+                        >
+                            Login
+                        </a>
+                        <a
+                            href="{{ url('dashboard/register') }}"
+                            class="bg-transparent border-2 border-white text-white px-4 py-2 rounded-lg font-medium hover:bg-white hover:text-red-600 transition-colors"
+                        >
+                            Daftar
+                        </a>
+                    @endauth
 
                     <!-- Desktop Cart -->
                     <div class="relative" x-data="{ open: false }">
