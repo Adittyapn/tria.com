@@ -42,8 +42,16 @@ Route::middleware('auth')->group(function () {
 // ===============================================
 Route::prefix('product')->name('products.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');
+    Route::get('/search', [ProductController::class, 'search'])->name('search');
     Route::get('/{product:slug}', [ProductController::class, 'show'])->name('show');
     Route::post('/{product}/calculate-price', [ProductController::class, 'calculatePrice'])->name('calculate-price');
+});
+
+// ===============================================
+// 🏷️ CATEGORY
+// ===============================================
+Route::prefix('category')->name('categories.')->group(function () {
+    Route::get('/{category:slug}', [ProductController::class, 'categoryProducts'])->name('products');
 });
 
 // ===============================================
@@ -53,9 +61,18 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::post('/add/{product}', [CartController::class, 'add'])->name('add');
     Route::patch('/{cart}', [CartController::class, 'update'])->name('update');
+    Route::patch('/update/{id}', [CartController::class, 'updateById'])->name('updateById'); // Simple ID-based update
     Route::delete('/{cart}', [CartController::class, 'remove'])->name('remove');
+    Route::delete('/item/{id}', [CartController::class, 'removeById'])->name('remove-by-id');
     Route::delete('/', [CartController::class, 'clear'])->name('clear');
     Route::get('/count', [CartController::class, 'count'])->name('count');
+});
+
+// ===============================================
+// 🔄 API ENDPOINTS
+// ===============================================
+Route::prefix('api')->name('api.')->group(function () {
+    Route::get('/recommended-products/{category?}', [ProductController::class, 'getRecommendedProducts'])->name('recommended-products');
 });
 
 // ===============================================
@@ -84,9 +101,6 @@ Route::prefix('shipping')->name('shipping.')->group(function () {
 
     Route::post('/cost', [ShippingController::class, 'calculateCost'])->name('calculate-cost');
     Route::post('/track', [ShippingController::class, 'trackShipment'])->name('track');
-
-    Route::get('/test-connection', [ShippingController::class, 'testConnection'])->name('test-connection');
-    Route::get('/info', [ShippingController::class, 'getShippingInfo'])->name('info');
 });
 
 // ===============================================
@@ -136,45 +150,4 @@ Route::get('orders/track/{orderNumber}', function($orderNumber) {
     return redirect()->route('orders.track.verify', $orderNumber, 301);
 })->where('orderNumber', 'DP-\d{8}-\d{3}');
 
-// ===============================================
-// 🛠️ TEST ROUTES (remove in production)
-// ===============================================
-Route::get('/test', function() {
-    return response()->json([
-        'message' => 'Laravel berjalan dengan baik!',
-        'timestamp' => now(),
-        'env' => app()->environment()
-    ]);
-})->name('test');
 
-Route::get('/test-provinces', function() {
-    $service = new \App\Services\RajaOngkirService();
-    return $service->getProvinces();
-});
-
-Route::get('/test-districts/{cityId}', function($cityId) {
-    $service = new \App\Services\RajaOngkirService();
-    return response()->json([
-        'city_id' => $cityId,
-        'districts' => $service->getDistricts($cityId),
-        'popular_districts' => $service->getPopularDistricts(),
-    ]);
-})->name('test-districts');
-
-Route::get('/test-shipping-cost', function() {
-    $service = new \App\Services\RajaOngkirService();
-    $result = $service->getShippingCost(574, 1360, 1000); // 1kg
-    return response()->json([
-        'origin_district_id' => 574,
-        'destination_district_id' => 1360,
-        'weight' => '1kg',
-        'shipping_options' => $result
-    ]);
-})->name('test-shipping-cost');
-
-// ===============================================
-// 👨‍💻 ADMIN (placeholder)
-// ===============================================
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    // Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-});

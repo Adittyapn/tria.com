@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class Cart extends Model
 {
@@ -51,7 +51,7 @@ class Cart extends Model
     public function calculateSubtotal(): void
     {
         $this->subtotal = $this->unit_price * $this->quantity;
-        $this->save();
+        // Don't save here, let the caller decide when to save
     }
 
     public function getCustomSizeAttribute(): ?string
@@ -118,7 +118,7 @@ class Cart extends Model
                 try {
                     Storage::disk('public')->delete($item->design_file_path);
                 } catch (\Exception $e) {
-                    \Log::warning("Failed to delete cart design file: {$item->design_file_path}. Error: " . $e->getMessage());
+                    Log::warning("Failed to delete cart design file: {$item->design_file_path}. Error: " . $e->getMessage());
                 }
             }
         }

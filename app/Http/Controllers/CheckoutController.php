@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\ValidationException;
 
 class CheckoutController extends Controller
@@ -107,7 +108,7 @@ class CheckoutController extends Controller
                                 Storage::disk('public')->move($item->design_file, $newPath);
                                 $orderItem->update(['design_file_path' => $newPath]);
                             } catch (\Exception $e) {
-                                \Log::warning("Failed to move design file: " . $e->getMessage());
+                                Log::warning("Failed to move design file: " . $e->getMessage());
                             }
                         }
                     }
@@ -139,7 +140,7 @@ class CheckoutController extends Controller
             }
 
             // ✅ SECURITY: Log order creation for audit
-            \Log::info('Order created', [
+            Log::info('Order created', [
                 'order_number' => $order->order_number,
                 'customer_email' => $order->customer->email,
                 'user_id' => Auth::id(),
@@ -163,7 +164,7 @@ class CheckoutController extends Controller
             DB::rollBack();
 
             // ✅ SECURITY: Log checkout errors for monitoring
-            \Log::error('Checkout process failed', [
+            Log::error('Checkout process failed', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
                 'ip_address' => $request->ip(),
@@ -251,7 +252,7 @@ class CheckoutController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('CheckoutController: getCities error', [
+            Log::error('CheckoutController: getCities error', [
                 'province_id' => $request->input('province_id'),
                 'error' => $e->getMessage()
             ]);
@@ -286,7 +287,7 @@ class CheckoutController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('CheckoutController: getDistricts error', [
+            Log::error('CheckoutController: getDistricts error', [
                 'city_id' => $request->input('city_id'),
                 'error' => $e->getMessage()
             ]);
@@ -318,7 +319,7 @@ class CheckoutController extends Controller
             $weight = max($validatedData['weight'], 1);
             $courier = $validatedData['courier'] ?? 'all';
 
-            \Log::info('CheckoutController: Calculating shipping', [
+            Log::info('CheckoutController: Calculating shipping', [
                 'origin' => $originId,
                 'destination' => $destinationId,
                 'weight' => $weight,
@@ -351,7 +352,7 @@ class CheckoutController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('CheckoutController: Shipping calculation error', [
+            Log::error('CheckoutController: Shipping calculation error', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);

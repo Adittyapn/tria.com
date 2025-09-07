@@ -11,7 +11,13 @@ export default defineConfig({
                 // Pisahkan Filament CSS
                 "resources/css/filament/admin/theme.css",
             ],
-            refresh: true,
+            refresh: [
+                // Refresh otomatis untuk file-file ini
+                "resources/views/**/*.blade.php",
+                "config/**/*.php",
+                "app/Http/Controllers/**/*.php",
+                "routes/**/*.php",
+            ],
         }),
     ],
     build: {
@@ -22,6 +28,11 @@ export default defineConfig({
                     filament: ["resources/css/filament/admin/theme.css"],
                 },
             },
+        },
+    },
+    server: {
+        hmr: {
+            host: "localhost",
         },
     },
 });

@@ -14,32 +14,27 @@ class RajaOngkirService
 
     public function __construct()
     {
-        $this->baseUrl = 'https://rajaongkir.komerce.id/api/v1/';
+        // Gunakan config dari .env
+        $this->baseUrl = config('services.rajaongkir.base_url', 'https://rajaongkir.komerce.id/api/v1/');
         $this->shippingCostApiKey = config('services.rajaongkir.shipping_cost_key');
         $this->shippingDeliveryApiKey = config('services.rajaongkir.shipping_delivery_key');
     }
 
-    /**
-     * Get list of provinces
-     */
     public function getProvinces()
     {
         $cacheKey = 'rajaongkir_provinces';
 
         return Cache::remember($cacheKey, 3600, function () {
             try {
-                $url = $this->baseUrl . 'destination/province';
-
                 Log::info('RajaOngkir: Getting provinces', [
-                    'url' => $url,
-                    'api_key_exists' => !empty($this->shippingCostApiKey)
+                    'api_key_exists' => !empty($this->shippingCostApiKey),
+                    'url' => $this->baseUrl . 'destination/province'
                 ]);
 
-                $response = Http::timeout(30)->withHeaders([
+                $response = Http::withHeaders([
                     'Key' => $this->shippingCostApiKey,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
-                ])->get($url);
+                    'Accept' => 'application/json'
+                ])->get($this->baseUrl . 'destination/province');
 
                 Log::info('RajaOngkir: Province response', [
                     'status' => $response->status(),
@@ -48,49 +43,33 @@ class RajaOngkirService
 
                 if ($response->successful()) {
                     $data = $response->json();
-
-                    if (isset($data['meta']['code']) && $data['meta']['code'] == 200 && isset($data['data'])) {
-                        $provinces = collect($data['data'])->map(function ($province) {
-                            return [
-                                'province_id' => (string) $province['id'],
-                                'province' => $province['name']
-                            ];
-                        })->toArray();
-
-                        Log::info('RajaOngkir: Provinces formatted', [
-                            'count' => count($provinces),
-                            'sample' => array_slice($provinces, 0, 2)
-                        ]);
-
-                        return $provinces;
+                    
+                    if (!isset($data['data']) || !is_array($data['data'])) {
+                        throw new \Exception('Invalid response format: ' . json_encode($data));
                     }
+
+                    // Transform data to match expected format
+                    return collect($data['data'])->map(function ($province) {
+                        return [
+                            'province_id' => (string) $province['id'],
+                            'province' => $province['name']
+                        ];
+                    })->sortBy('province')->values()->all();
                 }
 
-                Log::error('RajaOngkir API Error - Get Provinces', [
-                    'status' => $response->status(),
-                    'response' => $response->body()
-                ]);
-
-                return $this->getFallbackProvinces();
-
+                throw new \Exception('Failed to get provinces: ' . $response->body());
             } catch (\Exception $e) {
-                Log::error('RajaOngkir Service Error - Get Provinces', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                Log::error('RajaOngkir: Failed to get provinces', [
+                    'error' => $e->getMessage()
                 ]);
-
                 return $this->getFallbackProvinces();
             }
         });
     }
 
-    /**
-     * Get cities by province ID
-     */
-    public function getCities($provinceId = null)
+    public function getCities($provinceId = null) 
     {
         if (!$provinceId) {
-            Log::warning('RajaOngkir: No province ID provided for getCities');
             return [];
         }
 
@@ -98,67 +77,44 @@ class RajaOngkirService
 
         return Cache::remember($cacheKey, 3600, function () use ($provinceId) {
             try {
-                $url = $this->baseUrl . "destination/city/{$provinceId}";
-
                 Log::info('RajaOngkir: Getting cities', [
                     'province_id' => $provinceId,
-                    'url' => $url
+                    'url' => $this->baseUrl . 'destination/city/' . $provinceId  // Perubahan di sini
                 ]);
 
-                $response = Http::timeout(30)->withHeaders([
+                $response = Http::withHeaders([
                     'Key' => $this->shippingCostApiKey,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
-                ])->get($url);
+                    'Accept' => 'application/json'
+                ])->get($this->baseUrl . 'destination/city/' . $provinceId);  // Perubahan di sini
 
                 Log::info('RajaOngkir: Cities response', [
                     'status' => $response->status(),
-                    'body_length' => strlen($response->body())
+                    'body' => $response->body()
                 ]);
 
                 if ($response->successful()) {
                     $data = $response->json();
-
-                    if (isset($data['meta']['code']) && $data['meta']['code'] == 200 && isset($data['data'])) {
-                        $cities = collect($data['data'])->map(function ($city) {
-                            return [
-                                'city_id' => (string) $city['id'],
-                                'city_name' => $city['name'],
-                                'zip_code' => $city['zip_code'] ?? null
-                            ];
-                        })->toArray();
-
-                        Log::info('RajaOngkir: Cities formatted', [
-                            'province_id' => $provinceId,
-                            'count' => count($cities),
-                            'sample' => array_slice($cities, 0, 2)
-                        ]);
-
-                        return $cities;
+                    
+                    if (!isset($data['data']) || !is_array($data['data'])) {
+                        throw new \Exception('Invalid response format: ' . json_encode($data));
                     }
 
-                    Log::warning('RajaOngkir: Unexpected response format for cities', [
-                        'province_id' => $provinceId,
-                        'data' => $data
-                    ]);
-                    return $this->getFallbackCities($provinceId);
+                    return collect($data['data'])->map(function ($city) {
+                        return [
+                            'city_id' => (string) $city['id'],
+                            'city_name' => $city['name'],
+                            'type' => $city['type'] ?? '',
+                            'postal_code' => $city['postal_code'] ?? ''
+                        ];
+                    })->sortBy('city_name')->values()->all();
                 }
 
-                Log::error('RajaOngkir API Error - Get Cities', [
-                    'province_id' => $provinceId,
-                    'status' => $response->status(),
-                    'response' => $response->body()
-                ]);
-
-                return $this->getFallbackCities($provinceId);
-
+                throw new \Exception('Failed to get cities: ' . $response->body());
             } catch (\Exception $e) {
-                Log::error('RajaOngkir Service Error - Get Cities', [
+                Log::error('RajaOngkir: Failed to get cities', [
                     'province_id' => $provinceId,
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                    'error' => $e->getMessage()
                 ]);
-
                 return $this->getFallbackCities($provinceId);
             }
         });

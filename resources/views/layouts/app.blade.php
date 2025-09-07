@@ -64,8 +64,6 @@
 
         @livewireScripts
 
-        <!-- Alpine.js -->
-        <script src="/dist/js/script.js"></script>
         <!-- Custom Scripts -->
         @stack('scripts')
     </body>

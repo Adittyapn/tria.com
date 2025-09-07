@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Activitylog\Models\Activity;
+use App\Services\RajaOngkirService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,10 +20,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-            $this->app->singleton(RajaOngkirService::class, function ($app) {
+        $this->app->singleton(RajaOngkirService::class, function ($app) {
         return new RajaOngkirService();
-    });
-        // TAMBAHKAN KODE INI
+        });
+
         $this->app->bind(
             \Filament\Http\Responses\Auth\Contracts\LogoutResponse::class,
             \App\Http\Responses\LogoutResponse::class

@@ -6,15 +6,32 @@
 @push('head')
     <meta name="keywords" content="{{ is_array($product->keywords) ? implode(', ', $product->keywords) : '' }}" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Enhanced truncate utility for better text handling */
+        .truncate-enhanced {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    </style>
 @endpush
 
 @section('content')
     <div class="container mx-auto px-4 py-8">
         <!-- Breadcrumb -->
         <nav class="flex mb-8 text-sm">
-            <a href="{{ route('home') }}" class="text-gray-500 hover:text-red-600">Home</a>
+            <a href="{{ route('home') }}" class="text-gray-500 hover:text-blue-600" style="color: #000334">Home</a>
             <span class="mx-2 text-gray-400">/</span>
-            <a href="#" class="text-gray-500 hover:text-red-600">{{ $product->category->name ?? 'Produk' }}</a>
+            <a href="#" class="text-gray-500 hover:text-blue-600" style="color: #000334">
+                {{ $product->category->name ?? 'Produk' }}
+            </a>
             <span class="mx-2 text-gray-400">/</span>
             <span class="text-gray-900">{{ $product->name }}</span>
         </nav>
@@ -28,7 +45,7 @@
                     <img
                         :src="currentImage"
                         alt="{{ $product->name }}"
-                        class="w-full h-96 lg:h-[500px] object-cover transition-transform hover:scale-105"
+                        class="w-full h-96 lg:h-[450px] object-contain transition-transform hover:scale-105"
                         x-transition:enter="transition ease-out duration-300"
                         x-transition:enter-start="opacity-0 transform scale-95"
                         x-transition:enter-end="opacity-100 transform scale-100"
@@ -63,8 +80,9 @@
                         <!-- Main Image Thumbnail -->
                         <button
                             @click="changeImage('{{ asset('storage/' . $product->featured_image) }}')"
-                            :class="currentImage === '{{ asset('storage/' . $product->featured_image) }}' ? 'ring-2 ring-red-500' : ''"
-                            class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100 hover:ring-2 hover:ring-red-300 transition-all"
+                            :class="currentImage === '{{ asset('storage/' . $product->featured_image) }}' ? 'ring-2' : ''"
+                            style="ring-color: #000334"
+                            class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100 hover:ring-2 transition-all"
                         >
                             <img
                                 src="{{ asset('storage/' . $product->featured_image) }}"
@@ -77,8 +95,9 @@
                         @foreach ($product->gallery_images as $image)
                             <button
                                 @click="changeImage('{{ asset('storage/' . $image) }}')"
-                                :class="currentImage === '{{ asset('storage/' . $image) }}' ? 'ring-2 ring-red-500' : ''"
-                                class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100 hover:ring-2 hover:ring-red-300 transition-all"
+                                :class="currentImage === '{{ asset('storage/' . $image) }}' ? 'ring-2' : ''"
+                                style="ring-color: #000334"
+                                class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100 hover:ring-2 transition-all"
                             >
                                 <img
                                     src="{{ asset('storage/' . $image) }}"
@@ -89,13 +108,101 @@
                         @endforeach
                     </div>
                 @endif
+
+                <!-- Product Notes -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
+                    <!-- Important Notice -->
+                    <div
+                        class="text-white px-3 py-1 rounded inline-block text-sm font-semibold"
+                        style="background-color: #000334"
+                    >
+                        PENTING DI BACA :
+                    </div>
+                    <div class="text-gray-700 text-sm leading-relaxed">
+                        <p>
+                            Hasil print tidak bisa 100% sama dengan warna layar monitor customer, karena warna yang
+                            dihasilkan mesin cetak menggunakan CMYK (Cyan Magenta Yellow Black) sedangkan tampilan layar
+                            monitor adalah RGB (Red Green Blue). Hal ini yang menyebabkan warna desain pada layar
+                            monitor customer akan sedikit berbeda dengan hasil cetak.
+                        </p>
+
+                        <p class="mt-3">
+                            Untuk Cara Order di Website kami
+                            <a href="#" class="text-blue-500 hover:text-blue-700 underline">KLIK DISINI</a>
+                        </p>
+                    </div>
+
+                    <!-- Product Specifications -->
+                    <div
+                        class="text-white px-3 py-1 rounded inline-block text-sm font-semibold"
+                        style="background-color: #000334"
+                    >
+                        SPESIFIKASI PRODUK DAN AREA CETAK
+                    </div>
+                    <div class="space-y-2 text-sm text-gray-700">
+                        <div class="flex">
+                            <span class="font-medium w-32">JENIS BAHAN</span>
+                            <span class="mr-2">:</span>
+                            <span>CROMO</span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-32">FINISHING</span>
+                            <span class="mr-2">:</span>
+                            <span>KISSCUT</span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-32">HASIL CETAK</span>
+                            <span class="mr-2">:</span>
+                            <span>CMYK</span>
+                        </div>
+                    </div>
+
+                    <!-- Material Explanation -->
+                    <div
+                        class="text-white px-3 py-1 rounded inline-block text-sm font-semibold"
+                        style="background-color: #000334"
+                    >
+                        PENJELASAN JENIS BAHAN :
+                    </div>
+                    <div class="space-y-3 text-sm text-gray-700">
+                        <h4 class="font-semibold text-gray-900">Sticker CROMO</h4>
+                        <p>
+                            *Yaitu stiker yang berbahan dasar kertas dan lebih murah. Stiker cromo cocok untuk label
+                            kemasan makanan kering dan tidak disarankan untuk makan basah atau disimpan dalam kulkas.
+                        </p>
+                        <p>
+                            *Kelebihan stiker ini adalah dapat dicetak full color karena stiker ini cara pembuatannya
+                            hanya didesain dikomputer lalu diprint, harganya pun sangat murah dan terjangkau.
+                        </p>
+                        <p>
+                            *Kelemahan stiker ini jika sudah tertempel pada kertas atau plastik dalam waktu lama susah
+                            sekali untuk mengelupas atau memindahkannya ke permukaan benda lain. Stiker Cromo jika
+                            terkena air juga akan mudah rusak dan tidak tahan gores.
+                        </p>
+                    </div>
+
+                    <!-- Notes -->
+                    <div
+                        class="text-white px-3 py-1 rounded inline-block text-sm font-semibold"
+                        style="background-color: #000334"
+                    >
+                        CATATAN :
+                    </div>
+                    <div class="space-y-2 text-sm text-gray-700">
+                        <p class="font-medium">PENGERJAAN 1 HARI BERES BISA DI TUNGGU</p>
+                        <p class="font-medium">FILE DI WAJIBKAN MENGGUNAKAN CDR/AI/PNG/VEKTOR</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Product Info & Form -->
             <div class="space-y-6">
                 <!-- Category & SKU -->
                 <div class="flex items-center justify-between">
-                    <span class="inline-block px-3 py-1 text-sm bg-red-100 text-red-600 rounded-full">
+                    <span
+                        class="inline-block px-3 py-1 text-sm text-white rounded-full"
+                        style="background-color: #ff7900"
+                    >
                         {{ $product->category->name ?? 'Produk' }}
                     </span>
                     @if ($product->sku)
@@ -162,7 +269,8 @@
                                         min="0.1"
                                         max="50"
                                         placeholder="3.0"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+                                        style="focus:ring-color: #000334;"
                                     />
                                 </div>
                                 <div>
@@ -175,7 +283,8 @@
                                         min="0.1"
                                         max="50"
                                         placeholder="1.0"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+                                        style="focus:ring-color: #000334;"
                                     />
                                 </div>
                             </div>
@@ -519,24 +628,42 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <button
-                    @click="addToCart"
-                    :disabled="isLoading || !isOrderValid()"
-                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <span x-show="isLoading">⏳ Menambahkan...</span>
-                    <span x-show="!isLoading">🛒 Tambah ke Keranjang</span>
-                </button>
+                <div class="flex justify-end space-x-4">
+                    <button
+                        @click="addToCart"
+                        :disabled="isLoading || !isOrderValid()"
+                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span x-show="isLoading">⏳ Menambahkan...</span>
+                        <span x-show="!isLoading">🛒 Tambah ke Keranjang</span>
+                    </button>
 
-                <button
-                    @click="buyNow"
-                    :disabled="isLoading || !isOrderValid()"
-                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <span x-show="isLoading">⏳ Memproses...</span>
-                    <span x-show="!isLoading">⚡ Beli Sekarang</span>
-                </button>
+                    <button
+                        @click="buyNow"
+                        :disabled="isLoading || !isOrderValid()"
+                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span x-show="isLoading">⏳ Memproses...</span>
+                        <span x-show="!isLoading">⚡ Beli Sekarang</span>
+                    </button>
+                </div>
+
+                <!-- Debug Button - Remove in production -->
+                <div class="mt-4 space-y-2">
+                    <button
+                        @click="showSuccessModal = true; loadRecommendedProducts();"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                    >
+                        🧪 Test Modal (Debug)
+                    </button>
+                    <button
+                        @click="updateCartCount(5); console.log('Cart count set to 5');"
+                        class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                    >
+                        🔢 Test Cart Count (Debug)
+                    </button>
+                </div>
+                <!-- Action Buttons -->
 
                 <!-- Validation Message -->
                 <div x-show="! isOrderValid()" class="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -554,6 +681,193 @@
                 </div>
             </div>
             <!-- end product info & form -->
+
+            <!-- Success Modal -->
+            <div
+                x-show="showSuccessModal"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
+                style="display: none"
+                @click.self="showSuccessModal = false"
+            >
+                <div
+                    x-show="showSuccessModal"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95"
+                    class="bg-white rounded-lg w-full max-w-4xl mx-2 sm:mx-4 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
+                >
+                    <!-- Modal Header -->
+                    <div class="flex items-center justify-between p-4 sm:p-6 border-b">
+                        <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Berhasil Ditambahkan</h3>
+                        <button
+                            @click="showSuccessModal = false"
+                            class="text-gray-400 hover:text-gray-600 transition-colors p-2 -m-2 touch-manipulation"
+                        >
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Added Product -->
+                    <div class="p-4 sm:p-6 border-b">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                <img
+                                    src="{{ asset('storage/' . $product->featured_image) }}"
+                                    alt="{{ $product->name }}"
+                                    class="w-full h-full object-contain"
+                                />
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm sm:text-base font-medium text-gray-900 truncate">
+                                    {{ $product->name }}
+                                </h4>
+                                <div class="flex items-center justify-between mt-2">
+                                    <button
+                                        class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation"
+                                        onclick="window.location.href='/cart'"
+                                    >
+                                        Lihat Keranjang
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Products -->
+                    <div class="p-4 sm:p-6">
+                        <div class="flex items-center mb-4 sm:mb-6">
+                            <h4 class="text-lg sm:text-xl font-semibold text-gray-900">Kamu Mungkin Juga Suka</h4>
+                        </div>
+
+                        <!-- Loading Skeleton -->
+                        <div x-show="isLoadingRecommended" class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                            <template x-for="i in 6" :key="i">
+                                <div class="border border-gray-200 rounded-lg overflow-hidden animate-pulse">
+                                    <div class="aspect-square bg-gray-200"></div>
+                                    <div class="p-2 sm:p-3 space-y-2">
+                                        <div class="h-4 bg-gray-200 rounded w-full"></div>
+                                        <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                                        <div class="flex items-center gap-1">
+                                            <div class="h-3 w-3 bg-gray-200 rounded"></div>
+                                            <div class="h-3 bg-gray-200 rounded w-8"></div>
+                                            <div class="h-3 bg-gray-200 rounded w-16"></div>
+                                        </div>
+                                        <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Products Grid -->
+                        <div
+                            x-show="! isLoadingRecommended && recommendedProducts.length > 0"
+                            class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+                        >
+                            <template x-for="product in recommendedProducts" :key="product.id">
+                                <div
+                                    class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                                    @click="window.location.href = `/product/${product.slug}`"
+                                >
+                                    <div class="aspect-square bg-gray-100 relative">
+                                        <img
+                                            :src="product.image"
+                                            :alt="product.name"
+                                            class="w-full h-full object-contain p-1 sm:p-2"
+                                        />
+                                        <!-- Discount Badge -->
+                                        <div
+                                            x-show="product.discount"
+                                            class="absolute top-1 sm:top-2 left-1 sm:left-2 bg-red-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded"
+                                            x-text="product.discount + '%'"
+                                        ></div>
+                                    </div>
+                                    <div class="p-2 sm:p-3 space-y-1 sm:space-y-2">
+                                        <h5
+                                            class="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 leading-tight"
+                                            x-text="product.name"
+                                        ></h5>
+                                        <div class="space-y-1">
+                                            <div class="flex items-center gap-1 sm:gap-2 flex-wrap">
+                                                <div
+                                                    class="text-xs sm:text-sm font-bold text-gray-900"
+                                                    x-text="product.price"
+                                                ></div>
+                                                <div
+                                                    x-show="product.original_price"
+                                                    class="text-xs text-gray-500 line-through"
+                                                    x-text="product.original_price"
+                                                ></div>
+                                            </div>
+                                            <div class="flex items-center gap-1 text-xs text-gray-500">
+                                                <svg
+                                                    class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-yellow-400 flex-shrink-0"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 20 20"
+                                                >
+                                                    <path
+                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                                    />
+                                                </svg>
+                                                <span x-text="product.rating" class="flex-shrink-0"></span>
+                                                <span class="hidden sm:inline">•</span>
+                                                <span
+                                                    x-text="product.sold + ' terjual'"
+                                                    class="truncate hidden sm:inline"
+                                                ></span>
+                                            </div>
+                                            <div
+                                                class="text-xs text-gray-400 truncate hidden sm:block"
+                                                x-text="product.location"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div
+                            x-show="!isLoadingRecommended && recommendedProducts.length === 0"
+                            class="text-center py-8 sm:py-12"
+                        >
+                            <div
+                                class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center"
+                            >
+                                <svg
+                                    class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"
+                                    ></path>
+                                </svg>
+                            </div>
+                            <p class="text-gray-500 text-sm">Tidak ada produk rekomendasi tersedia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- end product detail section -->
     </div>
@@ -595,6 +909,9 @@
                 // UI states
                 isLoading: false,
                 errors: {},
+                showSuccessModal: false,
+                recommendedProducts: [],
+                isLoadingRecommended: false,
 
                 // Product constants from backend
                 productData: {
@@ -897,15 +1214,19 @@
                 // CART & CHECKOUT METHODS - FIXED
                 // ===============================
                 async addToCart() {
+                    console.log('addToCart function called');
+
                     if (!this.isOrderValid()) {
                         this.showError('Harap lengkapi semua data yang diperlukan');
                         return;
                     }
 
                     this.isLoading = true;
+                    console.log('Starting add to cart request...');
 
                     try {
                         const formData = this.buildFormData();
+                        console.log('FormData built:', formData);
 
                         const response = await fetch(`/cart/add/${this.productData.id}`, {
                             method: 'POST',
@@ -918,12 +1239,18 @@
                             },
                         });
 
+                        console.log('Response status:', response.status);
                         const result = await response.json();
+                        console.log('Response result:', result);
 
                         if (result.success) {
-                            this.showSuccess(result.message || 'Produk berhasil ditambahkan ke keranjang');
+                            console.log('Success! Showing modal...');
                             this.updateCartCount(result.cart_count);
+                            this.showSuccessModal = true;
+                            this.loadRecommendedProducts(); // Load recommended products when modal opens
+                            console.log('Modal should be visible now. showSuccessModal:', this.showSuccessModal);
                         } else {
+                            console.log('Request failed:', result);
                             if (result.errors) {
                                 this.errors = result.errors;
                             }
@@ -1073,11 +1400,42 @@
                 },
 
                 updateCartCount(count) {
+                    console.log('updateCartCount called with count:', count);
+
+                    // Update cart count in header using Alpine.js global store or direct variable update
+                    // Method 1: Dispatch custom event for Alpine.js header component
+                    window.dispatchEvent(
+                        new CustomEvent('cart-updated', {
+                            detail: { count: count },
+                        }),
+                    );
+
+                    // Method 2: Try to update Alpine.js component directly if available
+                    if (window.Alpine && window.Alpine.store) {
+                        try {
+                            window.Alpine.store('cart', { count: count });
+                        } catch (e) {
+                            console.log('Alpine store not available:', e);
+                        }
+                    }
+
+                    // Method 3: Update any elements with data-cart-count attribute
                     const cartCountElements = document.querySelectorAll('[data-cart-count]');
                     cartCountElements.forEach((element) => {
                         element.textContent = count;
                         element.style.display = count > 0 ? 'inline' : 'none';
                     });
+
+                    // Method 4: Update cart badge directly by class/text content
+                    const cartBadges = document.querySelectorAll('.bg-yellow-400');
+                    cartBadges.forEach((badge) => {
+                        if (badge.textContent.trim() === '0' || /^\d+$/.test(badge.textContent.trim())) {
+                            badge.textContent = count;
+                            badge.style.display = count > 0 ? 'flex' : 'none';
+                        }
+                    });
+
+                    console.log('Cart count updated to:', count);
                 },
 
                 contactWhatsApp() {
@@ -1105,6 +1463,44 @@
                     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
                     const i = Math.floor(Math.log(bytes) / Math.log(k));
                     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                },
+
+                // Load recommended products for modal
+                async loadRecommendedProducts() {
+                    this.isLoadingRecommended = true;
+                    this.recommendedProducts = []; // Clear existing products
+
+                    try {
+                        const categoryId = {{ $product->category_id ?? 'null' }};
+                        const currentProductId = {{ $product->id }};
+
+                        const url = `/api/recommended-products/${categoryId}?current_product_id=${currentProductId}`;
+
+                        const response = await fetch(url, {
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            if (result.success) {
+                                this.recommendedProducts = result.data || [];
+                            } else {
+                                console.warn('API returned success:false', result.message);
+                                this.recommendedProducts = [];
+                            }
+                        } else {
+                            console.error('Failed to load recommended products, HTTP status:', response.status);
+                            this.recommendedProducts = [];
+                        }
+                    } catch (error) {
+                        console.error('Failed to load recommended products:', error);
+                        this.recommendedProducts = [];
+                    } finally {
+                        this.isLoadingRecommended = false;
+                    }
                 },
             };
         }

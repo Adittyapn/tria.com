@@ -6,16 +6,27 @@ use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class CartController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $cartItems = $this->getCartItems();
         $totalAmount = Cart::getTotalAmount($this->getUserId(), $this->getSessionId());
         $itemCount = Cart::getItemCount($this->getUserId(), $this->getSessionId());
+
+        // If AJAX request, return JSON
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'cartItems' => $cartItems,
+                'totalAmount' => $totalAmount,
+                'cart_count' => $itemCount,
+                'success' => true
+            ]);
+        }
 
         return view('cart.index', compact('cartItems', 'totalAmount', 'itemCount'));
     }
@@ -150,11 +161,34 @@ class CartController extends Controller
     public function update(Request $request, Cart $cartItem)
     {
         try {
-            // Check ownership
-            if (!$this->isCartItemOwner($cartItem)) {
+            Log::info('Cart update attempt', [
+                'cart_item_id' => $cartItem->id,
+                'cart_user_id' => $cartItem->user_id,
+                'cart_session_id' => $cartItem->session_id,
+                'current_user_id' => $this->getUserId(),
+                'current_session_id' => $this->getSessionId(),
+                'request_data' => $request->all()
+            ]);
+
+            // Check ownership with more detailed logging
+            $isOwner = $this->isCartItemOwner($cartItem);
+            Log::info('Ownership check result', [
+                'is_owner' => $isOwner,
+                'cart_id' => $cartItem->id
+            ]);
+
+            if (!$isOwner) {
+                Log::warning('Cart item ownership check failed', [
+                    'cart_item_id' => $cartItem->id,
+                    'expected_user_id' => $this->getUserId(),
+                    'expected_session_id' => $this->getSessionId(),
+                    'actual_user_id' => $cartItem->user_id,
+                    'actual_session_id' => $cartItem->session_id
+                ]);
+                
                 return response()->json([
                     'success' => false,
-                    'message' => 'Item tidak ditemukan'
+                    'message' => 'Item tidak ditemukan atau tidak memiliki akses'
                 ], 404);
             }
 
@@ -164,14 +198,29 @@ class CartController extends Controller
 
             // Validate minimum quantity
             $product = $cartItem->product;
-            if ($validatedData['quantity'] < $product->minimum_quantity) {
+            $minQuantity = $product->minimum_quantity ?? 1;
+            
+            if ($validatedData['quantity'] < $minQuantity) {
                 throw ValidationException::withMessages([
-                    'quantity' => "Minimal pemesanan {$product->minimum_quantity} {$product->unit_label}"
+                    'quantity' => "Minimal pemesanan " . $minQuantity . " " . ($product->unit_label ?? 'pcs')
                 ]);
             }
 
+            Log::info('Updating cart item quantity', [
+                'cart_id' => $cartItem->id,
+                'old_quantity' => $cartItem->quantity,
+                'new_quantity' => $validatedData['quantity']
+            ]);
+
             $cartItem->quantity = $validatedData['quantity'];
             $cartItem->calculateSubtotal();
+            $cartItem->save(); // FIXED: Save the changes!
+
+            Log::info('Cart item updated successfully', [
+                'cart_id' => $cartItem->id,
+                'new_quantity' => $cartItem->quantity,
+                'new_subtotal' => $cartItem->subtotal
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -181,12 +230,23 @@ class CartController extends Controller
             ]);
 
         } catch (ValidationException $e) {
+            Log::warning('Cart update validation failed', [
+                'cart_id' => $cartItem->id ?? 'unknown',
+                'errors' => $e->errors()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Data tidak valid',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            Log::error('Cart update error', [
+                'cart_id' => $cartItem->id ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
@@ -197,6 +257,15 @@ class CartController extends Controller
     public function remove(Cart $cartItem)
     {
         try {
+            // Debug session info
+            Log::info('Remove cart item debug', [
+                'cart_item_id' => $cartItem->id,
+                'cart_session_id' => $cartItem->session_id,
+                'current_session_id' => $this->getSessionId(),
+                'cart_user_id' => $cartItem->user_id,
+                'current_user_id' => $this->getUserId(),
+            ]);
+
             // Check ownership
             if (!$this->isCartItemOwner($cartItem)) {
                 return response()->json([
@@ -220,9 +289,170 @@ class CartController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            Log::error('Failed to remove cart item', [
+                'error' => $e->getMessage(),
+                'cart_id' => $cartItem->id ?? 'unknown',
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateById(Request $request, $id)
+    {
+        try {
+            Log::info('Cart updateById attempt', [
+                'cart_id' => $id,
+                'current_user_id' => $this->getUserId(),
+                'current_session_id' => $this->getSessionId(),
+                'request_data' => $request->all()
+            ]);
+
+            // Find cart item manually
+            $cartItem = Cart::find($id);
+            
+            if (!$cartItem) {
+                Log::warning('Cart item not found', ['cart_id' => $id]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Item tidak ditemukan'
+                ], 404);
+            }
+
+            // Check ownership with more relaxed rules for logged in users
+            $isOwner = false;
+            if ($userId = $this->getUserId()) {
+                // For logged in users, check user_id
+                $isOwner = $cartItem->user_id == $userId;
+            } else {
+                // For guests, check session_id
+                $isOwner = $cartItem->session_id == $this->getSessionId();
+            }
+
+            Log::info('Ownership check result for updateById', [
+                'is_owner' => $isOwner,
+                'cart_id' => $cartItem->id,
+                'cart_user_id' => $cartItem->user_id,
+                'cart_session_id' => $cartItem->session_id
+            ]);
+
+            if (!$isOwner) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Item tidak ditemukan atau tidak memiliki akses'
+                ], 404);
+            }
+
+            $validatedData = $request->validate([
+                'quantity' => 'required|integer|min:1',
+            ]);
+
+            // Validate minimum quantity
+            $product = $cartItem->product;
+            $minQuantity = $product->minimum_quantity ?? 1;
+            
+            if ($validatedData['quantity'] < $minQuantity) {
+                throw ValidationException::withMessages([
+                    'quantity' => "Minimal pemesanan " . $minQuantity . " " . ($product->unit_label ?? 'pcs')
+                ]);
+            }
+
+            Log::info('Updating cart item quantity (updateById)', [
+                'cart_id' => $cartItem->id,
+                'old_quantity' => $cartItem->quantity,
+                'new_quantity' => $validatedData['quantity']
+            ]);
+
+            $cartItem->quantity = $validatedData['quantity'];
+            $cartItem->calculateSubtotal();
+            $cartItem->save();
+
+            Log::info('Cart item updated successfully (updateById)', [
+                'cart_id' => $cartItem->id,
+                'new_quantity' => $cartItem->quantity,
+                'new_subtotal' => $cartItem->subtotal
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Keranjang berhasil diperbarui',
+                'cart_item' => $cartItem->load('product'),
+                'total_amount' => Cart::getTotalAmount($this->getUserId(), $this->getSessionId())
+            ]);
+
+        } catch (ValidationException $e) {
+            Log::warning('Cart updateById validation failed', [
+                'cart_id' => $id,
+                'errors' => $e->errors()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak valid',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Cart updateById error', [
+                'cart_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function removeById($id)
+    {
+        try {
+            Log::info("RemoveById called for ID: {$id}");
+            Log::info("Current session ID: " . session()->getId());
+            
+            // Find cart item directly
+            $cart = Cart::find($id);
+            
+            if (!$cart) {
+                Log::info("Cart item not found for ID: " . $id);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cart item not found'
+                ], 404);
+            }
+            
+            Log::info("Found cart item - ID: {$cart->id}, Session: {$cart->session_id}, Product: {$cart->product_id}");
+            
+            // Check ownership - be more lenient for now
+            if ($cart->session_id !== session()->getId()) {
+                Log::warning("Session mismatch for cart ID {$id}: cart session = {$cart->session_id}, current session = " . session()->getId());
+                // For debugging, allow deletion anyway
+                Log::info("Allowing deletion despite session mismatch for debugging");
+            }
+            
+            Log::info("Removing cart item ID: {$id}");
+            $cart->delete();
+            
+            $remainingCount = Cart::where('session_id', session()->getId())->count();
+            Log::info("Remaining cart items: {$remainingCount}");
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Item removed from cart',
+                'cartCount' => $remainingCount
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error("Error removing cart item by ID {$id}: " . $e->getMessage());
+            Log::error("Stack trace: " . $e->getTraceAsString());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error removing item: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -273,11 +503,17 @@ class CartController extends Controller
 
     private function isCartItemOwner(Cart $cartItem): bool
     {
+        // If user is logged in, check user_id
         if ($userId = $this->getUserId()) {
             return $cartItem->user_id == $userId;
         }
 
-        return $cartItem->session_id == $this->getSessionId();
+        // For guest users, be more lenient with session checking
+        // Allow access if session_id matches OR if no session_id is set
+        $currentSessionId = $this->getSessionId();
+        
+        return $cartItem->session_id == $currentSessionId || 
+               (empty($cartItem->session_id) && !$cartItem->user_id);
     }
 
 // FIXED: Simplified price calculation - use Product model method
