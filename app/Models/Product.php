@@ -216,6 +216,12 @@ class Product extends Model
         'is_active' => true,
     ];
 
+    protected $appends = [
+        'image_url',
+        'final_price',
+        'pricing_description',
+    ];
+
     /*
     |--------------------------------------------------------------------------
     | Relationships
@@ -277,11 +283,13 @@ class Product extends Model
 
     public function getImageUrlAttribute(): string
     {
-        if ($this->featured_image && Storage::disk('public')->exists($this->featured_image)) {
-            return Storage::disk('public')->url($this->featured_image);
+        // ✅ OPTIMIZATION: Skip disk check, just return URL directly
+        // File existence will be handled by browser (404 if missing)
+        if ($this->featured_image) {
+            return asset('storage/' . $this->featured_image);
         }
 
-        return asset('images/default-product.png');
+        return asset('images/default-product.svg');
     }
 
     public function getGalleryUrlsAttribute(): array
@@ -290,12 +298,9 @@ class Product extends Model
             return [];
         }
 
+        // ✅ OPTIMIZATION: Skip disk check for better performance
         return collect($this->gallery_images)
-            ->map(fn($image) => Storage::disk('public')->exists($image)
-                ? Storage::disk('public')->url($image)
-                : null
-            )
-            ->filter()
+            ->map(fn($image) => asset('storage/' . $image))
             ->values()
             ->all();
     }

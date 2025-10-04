@@ -21,7 +21,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $theme_color
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Orders> $orders
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
  * @property-read int|null $orders_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
  * @property-read int|null $permissions_count
@@ -53,7 +53,6 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
-
     use HasRoles;
     use Notifiable;
 
@@ -67,12 +66,19 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Relasi ke Orders
+    // Relasi ke Order
     public function orders()
     {
-        return $this->hasMany(Orders::class);
+        return $this->hasMany(Order::class);
     }
 
+    // Relasi ke Customer
+    public function customer()
+    {
+        return $this->hasOne(Customer::class);
+    }
+
+    // Relasi ke Payments (sebagai verifier)
     public function verifiedPayments()
     {
         return $this->hasMany(Payments::class, 'verified_by');

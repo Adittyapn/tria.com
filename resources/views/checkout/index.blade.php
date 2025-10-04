@@ -2,47 +2,196 @@
 
 @section('title', 'Checkout')
 
+@push('styles')
+    <style>
+        /* Custom animations for checkout */
+        @keyframes pulse-glow {
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+            }
+            50% {
+                box-shadow:
+                    0 0 15px rgba(59, 130, 246, 0.6),
+                    0 0 25px rgba(59, 130, 246, 0.4);
+            }
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        .step-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .step-float:hover {
+            animation: float 0.6s ease-in-out infinite;
+        }
+
+        .shipping-option-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .shipping-option-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .progress-line-animate {
+            background: linear-gradient(
+                90deg,
+                rgba(59, 130, 246, 0.8) 0%,
+                rgba(59, 130, 246, 1) 50%,
+                rgba(59, 130, 246, 0.8) 100%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
-    <div class="container mx-auto px-4 py-8" x-data="checkoutManager()" x-init="init()">
+    <div class="container mx-auto px-4 py-6 md:py-8" x-data="checkoutManager()" x-init="init()">
         <!-- Progress Steps -->
         <div class="mb-8">
-            <div class="flex items-center justify-center space-x-4 mb-6">
-                <div class="flex items-center">
-                    <div
-                        class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold"
-                    >
-                        <i class="fas fa-shopping-cart"></i>
+            <!-- Desktop Progress Steps -->
+            <div class="hidden md:block">
+                <div class="flex items-center justify-center mb-6">
+                    <div class="flex items-center space-x-4 relative">
+                        <!-- Step 1: Cart -->
+                        <div class="flex flex-col items-center relative z-10">
+                            <div class="relative step-float">
+                                <div
+                                    class="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center font-semibold shadow-lg transform transition-all duration-300 hover:scale-110"
+                                >
+                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                </div>
+                                <div
+                                    class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full blur opacity-25 animate-pulse"
+                                ></div>
+                            </div>
+                            <span class="mt-3 text-sm font-semibold text-blue-600 transition-colors">Keranjang</span>
+                            <div class="w-2 h-2 bg-blue-600 rounded-full mt-1 animate-pulse"></div>
+                        </div>
+
+                        <!-- Connection Line 1 -->
+                        <div
+                            class="flex-1 h-1 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full relative overflow-hidden min-w-[80px] lg:min-w-[120px] progress-line-animate"
+                        ></div>
+
+                        <!-- Step 2: Checkout (Current) -->
+                        <div class="flex flex-col items-center relative z-10">
+                            <div class="relative step-float">
+                                <div
+                                    class="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center font-semibold shadow-lg transform transition-all duration-300 hover:scale-110 ring-4 ring-blue-200 step-glow"
+                                >
+                                    <i class="fas fa-credit-card text-lg"></i>
+                                </div>
+                                <div
+                                    class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full blur opacity-30"
+                                ></div>
+                            </div>
+                            <span class="mt-3 text-sm font-semibold text-blue-600 transition-colors">Checkout</span>
+                            <div class="w-2 h-2 bg-blue-600 rounded-full mt-1 animate-bounce"></div>
+                        </div>
+
+                        <!-- Connection Line 2 -->
+                        <div
+                            class="flex-1 h-1 bg-gray-200 rounded-full relative overflow-hidden min-w-[80px] lg:min-w-[120px]"
+                        >
+                            <div
+                                class="w-0 h-full bg-gradient-to-r from-blue-600 to-blue-700 rounded-full transition-all duration-1000 ease-out"
+                            ></div>
+                        </div>
+
+                        <!-- Step 3: Complete -->
+                        <div class="flex flex-col items-center relative z-10">
+                            <div class="relative">
+                                <div
+                                    class="w-12 h-12 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center font-semibold shadow-sm transition-all duration-300 hover:bg-gray-300"
+                                >
+                                    <i class="fas fa-check text-lg"></i>
+                                </div>
+                            </div>
+                            <span class="mt-3 text-sm font-medium text-gray-400">Selesai</span>
+                            <div class="w-2 h-2 bg-gray-300 rounded-full mt-1"></div>
+                        </div>
                     </div>
-                    <span class="ml-2 text-sm font-medium text-blue-600">Keranjang</span>
-                </div>
-                <div class="w-20 h-1 bg-blue-600 rounded"></div>
-                <div class="flex items-center">
-                    <div
-                        class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold"
-                    >
-                        <i class="fas fa-credit-card"></i>
-                    </div>
-                    <span class="ml-2 text-sm font-medium text-blue-600">Checkout</span>
-                </div>
-                <div class="w-20 h-1 bg-gray-300 rounded"></div>
-                <div class="flex items-center">
-                    <div
-                        class="w-10 h-10 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center font-semibold"
-                    >
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <span class="ml-2 text-sm font-medium text-gray-500">Selesai</span>
                 </div>
             </div>
-            <h1 class="text-3xl font-bold text-center text-gray-900">Checkout</h1>
+
+            <!-- Mobile Progress Steps -->
+            <div class="md:hidden mb-6">
+                <div class="relative">
+                    <!-- Progress Bar Background -->
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                        <div
+                            class="bg-gradient-to-r from-blue-600 to-blue-700 h-2 rounded-full transition-all duration-300"
+                            style="width: 66.66%"
+                        ></div>
+                    </div>
+
+                    <!-- Steps -->
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm"
+                            >
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="text-xs font-medium text-blue-600 mt-1">Keranjang</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm ring-2 ring-blue-200"
+                            >
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-blue-600 mt-1">Checkout</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center text-sm"
+                            >
+                                <i class="fas fa-flag-checkered"></i>
+                            </div>
+                            <span class="text-xs font-medium text-gray-400 mt-1">Selesai</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <h1
+                    class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2"
+                >
+                    Checkout Pesanan
+                </h1>
+                <p class="text-gray-600 text-sm md:text-base">Lengkapi informasi untuk menyelesaikan pesanan Anda</p>
+            </div>
         </div>
 
         <form @submit.prevent="processCheckout()" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-6">
                 <!-- Customer Information -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fas fa-user mr-3 text-blue-600"></i>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+                    <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-user mr-2 md:mr-3 text-blue-600"></i>
                         Informasi Pelanggan
                     </h2>
 
@@ -92,7 +241,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Alamat Lengkap *</label>
                         <textarea
                             x-model="form.customer_address"
-                            @input="if (!form.shipping_address) form.shipping_address = form.customer_address"
+                            @input="if (!form.shipping_address) form.shipping_address = form.customer_address; checkSingaparnaAddress()"
                             rows="3"
                             class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             :class="errors.customer_address ? 'border-red-500' : ''"
@@ -104,6 +253,44 @@
                             class="text-red-500 text-sm mt-1"
                             x-text="errors.customer_address?.[0]"
                         ></div>
+                        <div
+                            x-show="isSingaparnaAddress"
+                            x-transition:enter="transition ease-out duration-500"
+                            x-transition:enter-start="opacity-0 transform -translate-y-4 scale-95"
+                            x-transition:enter-end="opacity-100 transform translate-y-0 scale-100"
+                            x-transition:leave="transition ease-in duration-300"
+                            x-transition:leave-start="opacity-100 transform translate-y-0 scale-100"
+                            x-transition:leave-end="opacity-0 transform -translate-y-4 scale-95"
+                            class="mt-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg shadow-sm"
+                        >
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-map-marker-alt text-green-600 text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <div class="flex items-center">
+                                        <p class="text-sm font-semibold text-green-800">
+                                            Alamat Singaparna Terdeteksi!
+                                        </p>
+                                        <div class="ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    </div>
+                                    <p class="text-xs text-green-700 mt-1 flex items-center">
+                                        <i class="fas fa-store mr-1"></i>
+                                        Opsi kurir toko tersedia dengan tarif khusus
+                                    </p>
+                                </div>
+                                <div class="flex-shrink-0 ml-2">
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 animate-pulse"
+                                    >
+                                        <i class="fas fa-star mr-1"></i>
+                                        Hemat
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                         <p class="text-xs text-gray-500 mt-1">
                             Alamat ini akan digunakan sebagai alamat pengiriman juga
                         </p>
@@ -111,9 +298,9 @@
                 </div>
 
                 <!-- Shipping Information -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fas fa-map-marker-alt mr-3 text-blue-600"></i>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+                    <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-map-marker-alt mr-2 md:mr-3 text-blue-600"></i>
                         Alamat Pengiriman
                     </h2>
 
@@ -123,12 +310,16 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Provinsi *</label>
                             <select
                                 x-model="form.shipping_province_id"
-                                @change="loadCities($event.target.value); form.shipping_city_id = ''; form.shipping_district_id = ''; cities = []; districts = [];"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                @change="resetShippingSelection(); shippingOptions = []; loadCities($event.target.value); form.shipping_city_id = ''; form.shipping_district_id = ''; cities = []; districts = [];"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white appearance-none cursor-pointer"
                                 :class="errors.shipping_province_id ? 'border-red-500' : ''"
+                                style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"%236B7280\"><path fill-rule=\"evenodd\" d=\"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z\" clip-rule=\"evenodd\"/></svg>'); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;"
                                 required
                             >
-                                <option value="">Pilih Provinsi</option>
+                                <option value="">
+                                    <span x-show="loadingProvinces">Memuat provinsi...</span>
+                                    <span x-show="!loadingProvinces">Pilih Provinsi</span>
+                                </option>
                                 <template x-for="province in provinces" :key="province.province_id">
                                     <option :value="province.province_id" x-text="province.province"></option>
                                 </template>
@@ -155,6 +346,9 @@
                                 </svg>
                                 Memuat provinsi...
                             </div>
+                            <div x-show="!loadingProvinces && provinces.length > 0" class="text-xs text-gray-500 mt-1">
+                                <span x-text="provinces.length"></span> provinsi tersedia (diurutkan A-Z)
+                            </div>
                             <div
                                 x-show="errors.shipping_province_id"
                                 class="text-red-500 text-sm mt-1"
@@ -167,13 +361,18 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Kota *</label>
                             <select
                                 x-model="form.shipping_city_id"
-                                @change="updateCityName(); form.shipping_district_id = ''; districts = [];"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                @change="resetShippingSelection(); shippingOptions = []; updateCityName(); form.shipping_district_id = ''; districts = [];"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white appearance-none cursor-pointer disabled:bg-gray-50 disabled:cursor-not-allowed"
                                 :class="errors.shipping_city_id ? 'border-red-500' : ''"
+                                style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"%236B7280\"><path fill-rule=\"evenodd\" d=\"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z\" clip-rule=\"evenodd\"/></svg>'); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;"
                                 required
                                 :disabled="!form.shipping_province_id"
                             >
-                                <option value="">Pilih Kota</option>
+                                <option value="">
+                                    <span x-show="loadingCities">Memuat kota...</span>
+                                    <span x-show="!loadingCities && !form.shipping_province_id">Pilih provinsi dulu</span>
+                                    <span x-show="!loadingCities && form.shipping_province_id">Pilih Kota</span>
+                                </option>
                                 <template x-for="city in cities" :key="city.city_id">
                                     <option :value="city.city_id" x-text="city.city_name"></option>
                                 </template>
@@ -200,8 +399,11 @@
                                 </svg>
                                 Memuat kota...
                             </div>
-                            <div x-show="!form.shipping_province_id" class="text-sm text-gray-400 mt-1">
+                            <div x-show="!form.shipping_province_id && !loadingCities" class="text-sm text-gray-400 mt-1">
                                 Pilih provinsi terlebih dahulu
+                            </div>
+                            <div x-show="!loadingCities && form.shipping_province_id && cities.length > 0" class="text-xs text-gray-500 mt-1">
+                                <span x-text="cities.length"></span> kota tersedia (diurutkan A-Z)
                             </div>
                             <div
                                 x-show="errors.shipping_city_id"
@@ -220,11 +422,16 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Kecamatan</label>
                             <select
                                 x-model="form.shipping_district_id"
-                                @change="updateDistrictName()"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                @change="resetShippingSelection(); shippingOptions = []; updateDistrictName()"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white appearance-none cursor-pointer disabled:bg-gray-50 disabled:cursor-not-allowed"
+                                style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"%236B7280\"><path fill-rule=\"evenodd\" d=\"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z\" clip-rule=\"evenodd\"/></svg>'); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;"
                                 :disabled="!form.shipping_city_id || loadingDistricts"
                             >
-                                <option value="">Pilih Kecamatan</option>
+                                <option value="">
+                                    <span x-show="loadingDistricts">Memuat kecamatan...</span>
+                                    <span x-show="!loadingDistricts && !form.shipping_city_id">Pilih kota dulu</span>
+                                    <span x-show="!loadingDistricts && form.shipping_city_id">Pilih Kecamatan</span>
+                                </option>
                                 <template x-for="district in districts" :key="district.district_id">
                                     <option :value="district.district_id" x-text="district.district_name"></option>
                                 </template>
@@ -251,8 +458,11 @@
                                 </svg>
                                 Memuat kecamatan...
                             </div>
+                            <div x-show="!loadingDistricts && form.shipping_city_id && hasDistricts()" class="text-xs text-gray-500 mt-1">
+                                <span x-text="districts.length"></span> kecamatan tersedia (diurutkan A-Z)
+                            </div>
                             <div
-                                x-show="form.shipping_city_id && ! loadingDistricts && ! hasDistricts()"
+                                x-show="form.shipping_city_id && !loadingDistricts && !hasDistricts()"
                                 class="text-sm text-gray-500 mt-1"
                             >
                                 <i class="fas fa-info-circle mr-1"></i>
@@ -260,62 +470,70 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Shipping Address -->
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Alamat Pengiriman Spesifik</label>
-                        <textarea
-                            x-model="form.shipping_address"
-                            rows="3"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            :class="errors.shipping_address ? 'border-red-500' : ''"
-                            placeholder="Jalan, No. Rumah, RT/RW, Kelurahan (jika berbeda dari alamat utama)"
-                        ></textarea>
-                        <div
-                            x-show="errors.shipping_address"
-                            class="text-red-500 text-sm mt-1"
-                            x-text="errors.shipping_address?.[0]"
-                        ></div>
-                        <p class="text-xs text-gray-500 mt-1">
-                            <span x-show="getShippingDestination()" class="text-blue-600 font-medium">
-                                Tujuan:
-                                <span x-text="getShippingDestination()"></span>
-                            </span>
-                        </p>
-                    </div>
                 </div>
 
                 <!-- Shipping Options -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fas fa-truck mr-3 text-blue-600"></i>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+                    <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-truck mr-2 md:mr-3 text-blue-600"></i>
                         Pilihan Pengiriman
                     </h2>
 
                     <!-- Loading State -->
                     <div
-                        x-show="
-                            (loadingDistricts && form.shipping_district_id) ||
-                                (! shippingOptions.length &&
-                                    (form.shipping_district_id || form.shipping_city_id) &&
-                                    ! loadingCities)
-                        "
+                        x-show="loadingShipping"
                         class="text-center py-8"
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-95"
+                        x-transition:enter-end="opacity-100 transform scale-100"
                     >
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                        <p class="text-gray-600">Menghitung ongkos kirim...</p>
-                        <p class="text-sm text-gray-500 mt-2">
+                        <div class="relative mx-auto mb-4 w-12 h-12">
+                            <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-200"></div>
+                            <div
+                                class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent absolute top-0 left-0"
+                            ></div>
+                            <div class="absolute inset-0 rounded-full bg-blue-100 animate-pulse opacity-25"></div>
+                        </div>
+                        <p class="text-gray-700 font-medium">Menghitung ongkos kirim...</p>
+                        <p class="text-sm text-gray-500 mt-2 flex items-center justify-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
                             <span x-show="form.shipping_district_id">Menggunakan tingkat kecamatan</span>
                             <span x-show="!form.shipping_district_id && form.shipping_city_id">
                                 Menggunakan tingkat kota
                             </span>
                         </p>
+                        <div class="mt-4 flex justify-center space-x-1">
+                            <div
+                                class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                                style="animation-delay: 0s"
+                            ></div>
+                            <div
+                                class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                                style="animation-delay: 0.1s"
+                            ></div>
+                            <div
+                                class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                                style="animation-delay: 0.2s"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <!-- No Shipping Options Message -->
+                    <div
+                        x-show="!loadingShipping && !shippingOptions.length && (form.shipping_district_id || form.shipping_city_id) && !loadingCities && !loadingDistricts"
+                        class="text-center py-8"
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                    >
+                        <i class="fas fa-info-circle text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-600">Pilih lokasi pengiriman untuk melihat opsi</p>
                     </div>
 
                     <!-- Shipping Options List -->
                     <div
                         x-show="shippingOptions.length"
-                        class="space-y-3"
+                        class="space-y-2 md:space-y-3"
                         x-transition:enter="transition ease-out duration-300"
                         x-transition:enter-start="opacity-0"
                         x-transition:enter-end="opacity-100"
@@ -323,42 +541,90 @@
                         <template x-for="option in shippingOptions" :key="option.service + '_' + option.courier">
                             <label class="block cursor-pointer">
                                 <div
-                                    class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 transition-colors"
-                                    :class="form.shipping_service === option.service && form.shipping_courier === option.courier ? 'border-blue-500 bg-blue-50' : ''"
+                                    class="border rounded-lg p-3 md:p-4 transition-all duration-300 shipping-option-card"
+                                    :class="{
+                                        'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg ring-2 ring-blue-200': form.shipping_service === option.service && form.shipping_courier === option.courier,
+                                        'border-green-300 bg-gradient-to-r from-green-50 to-emerald-50 hover:border-green-400 hover:shadow-md': option.is_store_courier && !(form.shipping_service === option.service && form.shipping_courier === option.courier),
+                                        'border-gray-200 bg-white hover:border-blue-300 hover:bg-gray-50 hover:shadow-md': !option.is_store_courier && !(form.shipping_service === option.service && form.shipping_courier === option.courier)
+                                    }"
                                 >
-                                    <div class="flex items-center">
+                                    <div class="flex items-start md:items-center">
                                         <input
                                             type="radio"
                                             name="shipping_option"
                                             :value="option.service"
                                             @change="updateShippingCost(option)"
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2 mt-1 md:mt-0 flex-shrink-0"
                                         />
-                                        <div class="ml-3 flex-1 flex justify-between items-center">
-                                            <div>
-                                                <div
-                                                    class="font-medium text-gray-900"
-                                                    x-text="option.service_name || option.courier.toUpperCase() + ' ' + option.service"
-                                                ></div>
-                                                <div
-                                                    class="text-sm text-gray-600"
-                                                    x-text="option.description || 'Layanan pengiriman'"
-                                                ></div>
-                                                <div class="text-xs text-gray-500">
-                                                    Estimasi:
-                                                    <span x-text="option.etd"></span>
-                                                    <span
-                                                        x-show="option.note"
-                                                        class="ml-2 text-orange-600"
-                                                        x-text="'(' + option.note + ')'"
-                                                    ></span>
+                                        <div class="ml-3 flex-1">
+                                            <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+                                                <div class="flex-1 mb-2 md:mb-0">
+                                                    <!-- Service Name with Icon for Store Courier -->
+                                                    <div class="flex flex-col sm:flex-row sm:items-center mb-1">
+                                                        <div
+                                                            class="font-medium text-sm md:text-base"
+                                                            :class="option.is_store_courier ? 'text-green-800' : 'text-gray-900'"
+                                                            x-text="option.service_name || option.courier.toUpperCase() + ' ' + option.service"
+                                                        ></div>
+                                                        <div
+                                                            x-show="option.is_store_courier"
+                                                            class="mt-1 sm:mt-0 sm:ml-2"
+                                                        >
+                                                            <span
+                                                                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                                                            >
+                                                                <i class="fas fa-store mr-1"></i>
+                                                                <span class="hidden sm:inline">Rekomendasi</span>
+                                                                <span class="sm:hidden">Toko</span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Description -->
+                                                    <div
+                                                        class="text-xs md:text-sm mb-2"
+                                                        :class="option.is_store_courier ? 'text-green-700' : 'text-gray-600'"
+                                                        x-text="option.description || 'Layanan pengiriman'"
+                                                    ></div>
+
+                                                    <!-- Estimation and Notes -->
+                                                    <div
+                                                        class="flex flex-col sm:flex-row sm:items-center text-xs space-y-1 sm:space-y-0 sm:space-x-3"
+                                                    >
+                                                        <div class="flex items-center">
+                                                            <i class="fas fa-clock mr-1 text-gray-400"></i>
+                                                            <span class="text-gray-600">Estimasi:</span>
+                                                            <span
+                                                                class="font-medium ml-1"
+                                                                :class="option.is_store_courier ? 'text-green-700' : 'text-gray-700'"
+                                                                x-text="option.etd"
+                                                            ></span>
+                                                        </div>
+                                                        <div x-show="option.note" class="flex items-center">
+                                                            <i class="fas fa-info-circle mr-1 text-blue-400"></i>
+                                                            <span
+                                                                class="text-xs"
+                                                                :class="option.is_store_courier ? 'text-green-600' : 'text-blue-600'"
+                                                                x-text="option.note"
+                                                            ></span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="text-right">
-                                                <div
-                                                    class="font-semibold text-gray-900"
-                                                    x-text="formatPrice(option.cost)"
-                                                ></div>
+
+                                                <!-- Price -->
+                                                <div class="text-right md:ml-4">
+                                                    <div
+                                                        class="font-bold text-base md:text-lg"
+                                                        :class="option.is_store_courier ? 'text-green-700' : 'text-gray-900'"
+                                                        x-text="formatPrice(option.cost)"
+                                                    ></div>
+                                                    <div
+                                                        x-show="option.is_store_courier"
+                                                        class="text-xs text-green-600"
+                                                    >
+                                                        Hemat!
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -367,26 +633,32 @@
                         </template>
                     </div>
 
-                    <!-- No Options State -->
+                    <!-- Info about service availability -->
                     <div
-                        x-show="
-                            ! loadingCities &&
-                                ! loadingDistricts &&
-                                ! shippingOptions.length &&
-                                (form.shipping_city_id || form.shipping_district_id)
-                        "
-                        class="text-center py-8"
+                        x-show="shippingOptions.length"
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform translate-y-2"
+                        x-transition:enter-end="opacity-100 transform translate-y-0"
+                        class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg"
                     >
-                        <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-4"></i>
-                        <p class="text-gray-600">Tidak dapat menghitung ongkos kirim</p>
-                        <p class="text-sm text-gray-500 mt-2">Silakan pilih lokasi pengiriman yang berbeda</p>
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-2 flex-shrink-0"></i>
+                            <div class="text-xs text-blue-800">
+                                <p class="font-medium mb-1">Tentang Ketersediaan Layanan:</p>
+                                <ul class="list-disc list-inside space-y-0.5 text-blue-700">
+                                    <li>Layanan yang ditampilkan adalah yang <strong>tersedia untuk daerah Anda</strong></li>
+                                    <li>Layanan premium seperti JNE YES/SPS hanya tersedia di kota-kota tertentu</li>
+                                    <li>Jika tidak melihat layanan express, gunakan layanan reguler yang pasti tersedia</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Additional Notes -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fas fa-sticky-note mr-3 text-blue-600"></i>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+                    <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-sticky-note mr-2 md:mr-3 text-blue-600"></i>
                         Catatan Tambahan
                     </h2>
                     <textarea
@@ -404,9 +676,9 @@
             <!-- Order Summary -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 sticky top-8">
-                    <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                            <i class="fas fa-receipt mr-3 text-blue-600"></i>
+                    <div class="p-4 md:p-6">
+                        <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-receipt mr-2 md:mr-3 text-blue-600"></i>
                             Ringkasan Pesanan
                         </h2>
 
@@ -416,9 +688,11 @@
                                 <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                                     <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                                         <img
-                                            :src="item.product.image_url || '/images/default-product.png'"
+                                            :src="item.product.image_url || '/images/default-product.svg'"
                                             :alt="item.product.name"
                                             class="w-full h-full object-cover"
+                                            loading="lazy"
+                                            onerror="this.src='/images/default-product.svg'"
                                         />
                                     </div>
                                     <div class="flex-1 min-w-0">
@@ -568,9 +842,11 @@
                 loadingProvinces: false,
                 loadingCities: false,
                 loadingDistricts: false, // ← NEW: Districts loading state
+                loadingShipping: false, // ← NEW: Shipping calculation loading state
                 shippingOptions: [],
                 processing: false,
                 errors: {},
+                isSingaparnaAddress: false, // ← NEW: Track if address contains Singaparna
 
                 // ← NEW: Feature flags
                 useDistricts: true, // Enable district-level shipping
@@ -601,8 +877,11 @@
                         console.log('Provinces response:', response);
 
                         if (response.data.success) {
-                            this.provinces = response.data.data;
-                            console.log('Provinces loaded:', this.provinces.length);
+                            // Sort provinces alphabetically by province name
+                            this.provinces = response.data.data.sort((a, b) => 
+                                a.province.localeCompare(b.province, 'id', { numeric: true })
+                            );
+                            console.log('Provinces loaded and sorted:', this.provinces.length);
                         } else {
                             throw new Error(response.data.message || 'Failed to load provinces');
                         }
@@ -613,13 +892,13 @@
                             'error',
                         );
 
-                        // Fallback provinces
+                        // Fallback provinces (already sorted alphabetically)
                         this.provinces = [
                             { province_id: '6', province: 'DKI Jakarta' },
+                            { province_id: '11', province: 'Jawa Timur' },
                             { province_id: '9', province: 'Jawa Barat' },
                             { province_id: '10', province: 'Jawa Tengah' },
-                            { province_id: '11', province: 'Jawa Timur' },
-                        ];
+                        ].sort((a, b) => a.province.localeCompare(b.province, 'id', { numeric: true }));
                     }
                     this.loadingProvinces = false;
                 },
@@ -643,8 +922,11 @@
                         console.log('Cities response:', response);
 
                         if (response.data.success) {
-                            this.cities = response.data.data;
-                            console.log('Cities loaded:', this.cities.length);
+                            // Sort cities alphabetically by city name
+                            this.cities = response.data.data.sort((a, b) => 
+                                a.city_name.localeCompare(b.city_name, 'id', { numeric: true })
+                            );
+                            console.log('Cities loaded and sorted:', this.cities.length);
                         } else {
                             throw new Error(response.data.message || 'Failed to load cities');
                         }
@@ -670,7 +952,10 @@
                                 { city_id: '151', city_name: 'Depok' },
                             ],
                         };
-                        this.cities = fallbackCities[provinceId] || [];
+                        // Sort fallback cities alphabetically
+                        this.cities = (fallbackCities[provinceId] || []).sort((a, b) => 
+                            a.city_name.localeCompare(b.city_name, 'id', { numeric: true })
+                        );
                     }
                     this.loadingCities = false;
                 },
@@ -692,10 +977,13 @@
                         console.log('Districts response:', response);
 
                         if (response.data.success) {
-                            this.districts = response.data.data;
-                            console.log('Districts loaded:', this.districts.length);
+                            // Sort districts alphabetically by district name
+                            this.districts = response.data.data.sort((a, b) => 
+                                a.district_name.localeCompare(b.district_name, 'id', { numeric: true })
+                            );
+                            console.log('Districts loaded and sorted:', this.districts.length);
 
-                            // Auto-select first district if only one available
+                            // Auto-select first district if only one available (after sorting)
                             if (this.districts.length === 1) {
                                 this.form.shipping_district_id = this.districts[0].district_id;
                                 this.updateDistrictName();
@@ -718,6 +1006,45 @@
                     this.loadingDistricts = false;
                 },
 
+                // ← NEW: Check if address contains Singaparna
+                checkSingaparnaAddress() {
+                    const address = this.form.customer_address.toLowerCase();
+                    const singaparnaKeywords = ['singaparna', 'sing parna', 'kec singaparna', 'kecamatan singaparna'];
+
+                    this.isSingaparnaAddress = singaparnaKeywords.some((keyword) =>
+                        address.includes(keyword.toLowerCase()),
+                    );
+
+                    console.log('Singaparna address check:', {
+                        address: this.form.customer_address,
+                        isSingaparna: this.isSingaparnaAddress,
+                    });
+
+                    // Trigger shipping recalculation if location data is available
+                    if (this.form.shipping_city_id) {
+                        this.calculateShipping();
+                    }
+                },
+
+                // ← NEW: Add store courier option for Singaparna addresses
+                addStoreCourierOption() {
+                    const storeCourierOption = {
+                        courier: 'store_courier',
+                        service: 'ANTAR_TOKO',
+                        service_name: 'Kurir Toko',
+                        description: 'Pengantaran langsung dari toko (Khusus Singaparna)',
+                        cost: 20000, // Cheaper than regular shipping
+                        etd: 'Hari ini - 1 hari',
+                        note: 'Khusus wilayah Singaparna',
+                        is_store_courier: true,
+                    };
+
+                    // Add at the beginning of the array (prioritize store courier)
+                    this.shippingOptions.unshift(storeCourierOption);
+
+                    console.log('Added store courier option for Singaparna');
+                },
+
                 // ← UPDATED: Enhanced shipping calculation with district support
                 async calculateShipping() {
                     // Require either district or city to be selected
@@ -728,6 +1055,10 @@
 
                     const destinationId = this.form.shipping_district_id || this.form.shipping_city_id;
                     const useDistrict = !!this.form.shipping_district_id;
+
+                    // Set loading state
+                    this.loadingShipping = true;
+                    this.shippingOptions = [];
 
                     try {
                         console.log('Calculating shipping:', {
@@ -755,6 +1086,12 @@
 
                         if (response.data.success) {
                             this.shippingOptions = response.data.shipping_options || [];
+
+                            // Add store courier option for Singaparna addresses
+                            if (this.isSingaparnaAddress) {
+                                this.addStoreCourierOption();
+                            }
+
                             console.log('Shipping options loaded:', this.shippingOptions.length);
 
                             // Reset shipping selection when options change
@@ -795,6 +1132,14 @@
                                 note: 'Estimasi (fallback)',
                             },
                         ];
+
+                        // Add store courier for Singaparna even in fallback
+                        if (this.isSingaparnaAddress) {
+                            this.addStoreCourierOption();
+                        }
+                    } finally {
+                        // Always turn off loading state
+                        this.loadingShipping = false;
                     }
                 },
 

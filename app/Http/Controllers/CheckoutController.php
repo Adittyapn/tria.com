@@ -307,7 +307,7 @@ class CheckoutController extends Controller
                 'destination_district_id' => 'nullable|integer',
                 'destination_city_id' => 'required|integer',
                 'weight' => 'required|numeric|min:1',
-                'courier' => 'nullable|string|in:jne,pos,tiki,all'
+                'courier' => 'nullable|string|in:jne,jnt,pos,all'
             ]);
 
             $destinationId = $validatedData['destination_district_id'] ?? $validatedData['destination_city_id'];

@@ -40,7 +40,7 @@
                 </span>
             </div>
             <div class="flex items-center space-x-2 text-xs">
-                <a href="#" class="hover:underline text-blue-600">Lacak</a>
+                <a href="/track-order" class="hover:underline text-blue-600">Lacak</a>
                 <span class="hidden sm:inline text-gray-400">|</span>
                 <a href="#" class="hidden sm:inline hover:underline text-blue-600">Bantuan</a>
             </div>

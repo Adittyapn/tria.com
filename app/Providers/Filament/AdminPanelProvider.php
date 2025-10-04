@@ -36,14 +36,21 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            // Make the dashboard content wider on desktop so widgets/cards don't get truncated.
+            // You can switch to 'full' if you prefer edge-to-edge content.
+            ->maxContentWidth('full')
             ->resources([
                 config('filament-logger.activity_resource'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+                ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+                ->discoverPages(in: app_path('Filament/PublicPages'), for: 'App\\Filament\\PublicPages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 \App\Filament\Widgets\AdminStatsOverview::class,
+                \App\Filament\Widgets\CustomerOrderStats::class,
+                \App\Filament\Widgets\CustomerRecentOrders::class,
+                \App\Filament\Widgets\CustomerActivityWidget::class,
             ])
             ->navigationItems([
                 NavigationItem::make('Home')

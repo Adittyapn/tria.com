@@ -6,10 +6,12 @@
     <div class="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-indigo-100 py-8 px-4">
         <div class="max-w-5xl mx-auto">
             <!-- Success Verification Banner -->
-            <div class="mb-6 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl shadow-lg p-6 text-white">
+            <div
+                class="mb-6 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl shadow-lg p-4 sm:p-6 text-white"
+            >
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
@@ -18,9 +20,11 @@
                             ></path>
                         </svg>
                     </div>
-                    <div class="ml-4">
-                        <h2 class="text-lg font-bold">Email Terverifikasi</h2>
-                        <p class="text-emerald-100 text-sm">Anda memiliki akses penuh ke order ini selama 1 jam</p>
+                    <div class="ml-3 sm:ml-4">
+                        <h2 class="text-base sm:text-lg font-bold">Email Terverifikasi</h2>
+                        <p class="text-emerald-100 text-xs sm:text-sm">
+                            Anda memiliki akses penuh ke order ini selama 1 jam
+                        </p>
                     </div>
                 </div>
             </div>
@@ -28,9 +32,14 @@
             <!-- Header Section -->
             <div class="text-center mb-8">
                 <div
-                    class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-4 shadow-lg"
+                    class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-4 shadow-lg"
                 >
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                        class="w-8 h-8 sm:w-10 sm:h-10 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -39,18 +48,25 @@
                         ></path>
                     </svg>
                 </div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">Tracking Order</h1>
-                <p class="text-xl font-mono font-semibold text-blue-600 mb-1">{{ $order->order_number }}</p>
-                <p class="text-gray-600">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Tracking Order</h1>
+                <p class="text-lg sm:text-xl font-mono font-semibold text-blue-600 mb-1 break-all px-4">
+                    {{ $order->order_number }}
+                </p>
+                <p class="text-sm sm:text-base text-gray-600 px-4">
                     Dibuat {{ $order->created_at->format('d M Y, H:i') }} • Customer: {{ $order->customer->name }}
                 </p>
             </div>
 
             <!-- Flash Messages -->
             @if (session('success'))
-                <div class="mb-6 bg-green-50 border border-green-200 rounded-xl p-4">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mb-6 bg-green-50 border border-green-200 rounded-xl p-3 sm:p-4">
+                    <div class="flex items-start sm:items-center">
+                        <svg
+                            class="w-5 h-5 text-green-600 mr-2 sm:mr-3 flex-shrink-0 mt-0.5 sm:mt-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
@@ -58,15 +74,20 @@
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                             ></path>
                         </svg>
-                        <span class="text-green-800 font-medium">{{ session('success') }}</span>
+                        <span class="text-green-800 font-medium text-sm sm:text-base">{{ session('success') }}</span>
                     </div>
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mb-6 bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4">
+                    <div class="flex items-start sm:items-center">
+                        <svg
+                            class="w-5 h-5 text-red-600 mr-2 sm:mr-3 flex-shrink-0 mt-0.5 sm:mt-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
@@ -74,7 +95,7 @@
                                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                             ></path>
                         </svg>
-                        <span class="text-red-800 font-medium">{{ session('error') }}</span>
+                        <span class="text-red-800 font-medium text-sm sm:text-base">{{ session('error') }}</span>
                     </div>
                 </div>
             @endif
@@ -94,8 +115,8 @@
                     $currentStatus = $statusConfig[$order->status] ?? $statusConfig['pending_payment'];
                 @endphp
 
-                <div class="{{ $currentStatus['bg'] }} border {{ $currentStatus['text'] }} rounded-xl p-6">
-                    <div class="flex items-center justify-between">
+                <div class="{{ $currentStatus['bg'] }} border {{ $currentStatus['text'] }} rounded-xl p-4 sm:p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                         <div class="flex items-center">
                             <!-- Icon -->
 
@@ -148,8 +169,8 @@
                             @endswitch
 
                             <div>
-                                <h2 class="text-2xl font-bold">{{ $order->status_label }}</h2>
-                                <p class="text-base opacity-90 mt-1">
+                                <h2 class="text-xl sm:text-2xl font-bold">{{ $order->status_label }}</h2>
+                                <p class="text-sm sm:text-base opacity-90 mt-1">
                                     @switch($order->status)
                                         @case('pending_payment')
                                             Menunggu konfirmasi pembayaran dari Anda
@@ -184,36 +205,64 @@
 
                                 <!-- Info Bank Jika Pending Payment -->
                                 @if ($order->status === 'pending_payment' && ! $order->payment_proof)
-                                    <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                        <h3 class="font-semibold text-lg mb-2">Informasi Transfer</h3>
-                                        <p class="text-base opacity-90">
-                                            Bank:
-                                            <span class="font-medium">{{ $order->bank_name ?? 'BCA' }}</span>
-                                            <br />
-                                            Nomor Rekening:
-                                            <span class="font-medium">
-                                                {{ $order->bank_account ?? '123-456-7890' }}
-                                            </span>
-                                            <br />
-                                            Atas Nama:
-                                            <span class="font-medium">
-                                                {{ $order->account_holder ?? 'PT Contoh Nama' }}
-                                            </span>
-                                        </p>
+                                    <div class="mt-4 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <h3 class="font-semibold text-base sm:text-lg mb-2">Informasi Transfer</h3>
+                                        <div class="text-sm sm:text-base opacity-90 space-y-1">
+                                            <p>
+                                                <span class="text-gray-600">Bank:</span>
+                                                <span class="font-medium">{{ $order->bank_name ?? 'BCA' }}</span>
+                                            </p>
+                                            <p>
+                                                <span class="text-gray-600">Nomor Rekening:</span>
+                                                <span class="font-medium font-mono">
+                                                    {{ $order->bank_account ?? '123-456-7890' }}
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <span class="text-gray-600">Atas Nama:</span>
+                                                <span class="font-medium">
+                                                    {{ $order->account_holder ?? 'PT Contoh Nama' }}
+                                                </span>
+                                            </p>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex space-x-3">
+                        <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full lg:w-auto">
+                            <!-- Download Invoice Button - Only show when payment is verified -->
+                            @if ($order->payment_status === 'verified')
+                                <a
+                                    href="{{ route('orders.download-invoice', $order->order_number) }}"
+                                    target="_blank"
+                                    class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
+                                >
+                                    <svg
+                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        ></path>
+                                    </svg>
+                                    <span class="whitespace-nowrap">Download Invoice</span>
+                                </a>
+                            @endif
+
                             @if ($order->status === 'pending_payment' && ! $order->payment_proof)
                                 <button
                                     onclick="openUploadModal()"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
                                 >
                                     <svg
-                                        class="w-5 h-5 inline mr-2"
+                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -225,17 +274,17 @@
                                             d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                                         ></path>
                                     </svg>
-                                    Upload Bukti Bayar
+                                    <span class="whitespace-nowrap">Upload Bukti Bayar</span>
                                 </button>
                             @endif
 
                             @if (in_array($order->status, ['pending_payment', 'paid']))
                                 <button
                                     onclick="openCancelModal()"
-                                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
                                 >
                                     <svg
-                                        class="w-5 h-5 inline mr-2"
+                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -247,7 +296,7 @@
                                             d="M6 18L18 6M6 6l12 12"
                                         ></path>
                                     </svg>
-                                    Batalkan Order
+                                    <span class="whitespace-nowrap">Batalkan Order</span>
                                 </button>
                             @endif
                         </div>
@@ -825,13 +874,16 @@
     </div>
 
     <!-- Upload Payment Modal -->
-    <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-            <div class="p-6">
+    <div
+        id="uploadModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50 overflow-y-auto"
+    >
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto my-8">
+            <div class="p-4 sm:p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-900">Upload Bukti Pembayaran</h3>
-                    <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900">Upload Bukti Pembayaran</h3>
+                    <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
@@ -853,7 +905,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">File Bukti Pembayaran</label>
                             <div
-                                class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors"
+                                class="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 text-center hover:border-gray-400 transition-colors"
                             >
                                 <input
                                     type="file"
@@ -863,9 +915,9 @@
                                     required
                                     class="hidden"
                                 />
-                                <label for="payment_proof" class="cursor-pointer">
+                                <label for="payment_proof" class="cursor-pointer block">
                                     <svg
-                                        class="w-12 h-12 text-gray-400 mx-auto mb-2"
+                                        class="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-2"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -892,22 +944,22 @@
                                 id="payment_notes"
                                 name="payment_notes"
                                 rows="3"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                                 placeholder="Tambahkan catatan jika diperlukan..."
                             ></textarea>
                         </div>
 
-                        <div class="flex space-x-3 pt-4">
+                        <div class="flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0 pt-4">
                             <button
                                 type="button"
                                 onclick="closeUploadModal()"
-                                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors"
+                                class="w-full sm:flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-colors text-sm sm:text-base"
                             >
                                 Batal
                             </button>
                             <button
                                 type="submit"
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                                class="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-colors text-sm sm:text-base"
                             >
                                 Upload
                             </button>
@@ -919,13 +971,16 @@
     </div>
 
     <!-- Cancel Order Modal -->
-    <div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-            <div class="p-6">
+    <div
+        id="cancelModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50 overflow-y-auto"
+    >
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto my-8">
+            <div class="p-4 sm:p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-red-900">Batalkan Pesanan</h3>
-                    <button onclick="closeCancelModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <h3 class="text-lg sm:text-xl font-bold text-red-900">Batalkan Pesanan</h3>
+                    <button onclick="closeCancelModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
@@ -936,8 +991,8 @@
                     </button>
                 </div>
 
-                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                    <p class="text-red-800 text-sm">
+                <div class="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-4">
+                    <p class="text-red-800 text-xs sm:text-sm">
                         ⚠️ Pesanan yang sudah dibatalkan tidak dapat dikembalikan. Pastikan keputusan Anda.
                     </p>
                 </div>
@@ -955,22 +1010,22 @@
                                 name="cancellation_reason"
                                 rows="4"
                                 required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base"
                                 placeholder="Jelaskan alasan Anda membatalkan pesanan ini..."
                             ></textarea>
                         </div>
 
-                        <div class="flex space-x-3 pt-4">
+                        <div class="flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0 pt-4">
                             <button
                                 type="button"
                                 onclick="closeCancelModal()"
-                                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors"
+                                class="w-full sm:flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-colors text-sm sm:text-base"
                             >
                                 Batal
                             </button>
                             <button
                                 type="submit"
-                                class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                                class="w-full sm:flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-colors text-sm sm:text-base"
                             >
                                 Ya, Batalkan
                             </button>

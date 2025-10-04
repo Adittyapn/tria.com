@@ -223,13 +223,14 @@ class RajaOngkirService
                 'origin' => $originDistrictId,
                 'destination' => $destinationDistrictId,
                 'weight' => max($weight, 1000), // Minimum 1kg
-                'courier' => $courier ?: 'jne:pos:tiki:sicepat:jnt:ninja:lion:anteraja:rex:wahana',
+                'courier' => $courier ?: 'jne:jnt:pos',
                 'price' => 'lowest'
             ]);
 
             Log::info('RajaOngkir: Shipping cost raw response', [
                 'status' => $response->status(),
-                'body' => $response->body()
+                'has_data' => isset($data['data']),
+                'data_count' => isset($data['data']) ? count($data['data']) : 0
             ]);
 
             if ($response->successful()) {
@@ -237,13 +238,15 @@ class RajaOngkirService
 
                 if (isset($data['meta']['code']) && $data['meta']['code'] == 200 && isset($data['data'])) {
                     Log::info('RajaOngkir: Shipping cost response success', [
-                        'data_count' => count($data['data'])
+                        'data_count' => count($data['data']),
+                        'data_sample' => array_slice($data['data'], 0, 3)
                     ]);
                     return $this->formatShippingResults($data['data']);
                 }
 
                 Log::warning('RajaOngkir: Unexpected shipping cost response format', [
-                    'data' => $data
+                    'meta' => $data['meta'] ?? null,
+                    'has_data' => isset($data['data'])
                 ]);
                 return $this->getFallbackShippingOptions();
             }
@@ -270,6 +273,7 @@ class RajaOngkirService
     private function formatShippingResults($results)
     {
         $formattedResults = [];
+        $skippedServices = [];
 
         foreach ($results as $result) {
             // Handle new response format from district endpoint
@@ -280,6 +284,22 @@ class RajaOngkirService
             $cost = (int) ($result['cost'] ?? 0);
             $etd = $result['etd'] ?? '2-3 day';
 
+            // Skip if cost is 0 (service not available)
+            if ($cost <= 0) {
+                $skippedServices[] = [
+                    'courier' => $courierCode,
+                    'service' => $service,
+                    'reason' => 'zero_cost'
+                ];
+                continue;
+            }
+
+            // Add note for premium/express services
+            $note = '';
+            if (in_array(strtoupper($service), ['YES', 'SPS', 'OKE'])) {
+                $note = 'Layanan premium (ketersediaan terbatas)';
+            }
+
             $formattedResults[] = [
                 'courier' => $courierCode,
                 'courier_name' => $courierName,
@@ -288,7 +308,7 @@ class RajaOngkirService
                 'description' => $description,
                 'cost' => $cost,
                 'etd' => $etd,
-                'note' => ''
+                'note' => $note
             ];
         }
 
@@ -298,8 +318,8 @@ class RajaOngkirService
         });
 
         Log::info('RajaOngkir: Formatted shipping results', [
-            'count' => count($formattedResults),
-            'sample' => array_slice($formattedResults, 0, 2)
+            'total_available' => count($formattedResults),
+            'skipped_count' => count($skippedServices)
         ]);
 
         return $formattedResults;
@@ -444,6 +464,7 @@ class RajaOngkirService
 
     /**
      * Get fallback shipping options when API fails
+     * Only include regular services that are available nationwide
      */
     private function getFallbackShippingOptions()
     {
@@ -453,20 +474,20 @@ class RajaOngkirService
                 'courier_name' => 'JNE',
                 'service' => 'REG',
                 'service_name' => 'JNE REG',
-                'description' => 'Layanan Reguler',
+                'description' => 'Layanan Reguler (Tersedia di seluruh Indonesia)',
                 'cost' => 15000,
                 'etd' => '2-3 hari',
-                'note' => 'Estimasi'
+                'note' => 'Estimasi - Layanan regular tersedia untuk semua daerah'
             ],
             [
-                'courier' => 'jne',
-                'courier_name' => 'JNE',
-                'service' => 'YES',
-                'service_name' => 'JNE YES',
-                'description' => 'Yakin Esok Sampai',
-                'cost' => 25000,
-                'etd' => '1-1 hari',
-                'note' => 'Estimasi'
+                'courier' => 'jnt',
+                'courier_name' => 'JNT',
+                'service' => 'REG',
+                'service_name' => 'JNT REG',
+                'description' => 'J&T Express Regular',
+                'cost' => 13000,
+                'etd' => '2-4 hari',
+                'note' => 'Estimasi - Layanan regular tersedia untuk semua daerah'
             ],
             [
                 'courier' => 'pos',
@@ -476,7 +497,7 @@ class RajaOngkirService
                 'description' => 'Pos Indonesia Reguler',
                 'cost' => 12000,
                 'etd' => '3-4 hari',
-                'note' => 'Estimasi'
+                'note' => 'Estimasi - Layanan regular tersedia untuk semua daerah'
             ]
         ];
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -91,5 +92,18 @@ class AuthController extends Controller
 
         // Logic untuk forgot password akan ditambahkan nanti
         return redirect()->back()->with('success', 'Link reset password telah dikirim ke email Anda!');
+    }
+
+    /**
+     * Handle logout
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
+        return redirect()->route('home')->with('success', 'Anda telah berhasil logout.');
     }
 }

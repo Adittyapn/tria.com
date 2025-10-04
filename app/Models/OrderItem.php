@@ -56,7 +56,7 @@ class OrderItem extends Model
     // Helper methods
     public function calculateSubtotal(): void
     {
-        $this->subtotal = $this->unit_price * $this->quantity;
+        $this->subtotal = $this->price * $this->quantity;
         $this->save();
     }
 
@@ -66,6 +66,32 @@ class OrderItem extends Model
             return $this->custom_size_width . ' x ' . $this->custom_size_height . ' cm';
         }
         return null;
+    }
+
+    // Accessor for backwards compatibility (width/height)
+    public function getWidthAttribute(): ?float
+    {
+        return $this->custom_size_width;
+    }
+
+    public function getHeightAttribute(): ?float
+    {
+        return $this->custom_size_height;
+    }
+
+    public function getUnitAttribute(): ?string
+    {
+        return $this->selected_material;
+    }
+
+    public function getFinishingAttribute(): ?string
+    {
+        return $this->selected_finishing;
+    }
+
+    public function getNotesAttribute(): ?string
+    {
+        return $this->design_notes;
     }
 
     public function hasDesignFile(): bool

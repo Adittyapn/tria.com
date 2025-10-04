@@ -15,6 +15,20 @@ use App\Http\Controllers\ShippingController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // ===============================================
+// 🔍 TRACK ORDER (Public)
+// ===============================================
+use App\Http\Controllers\PublicTrackingController;
+
+// Backward compatible short path
+Route::get('/track', function () {
+    return redirect('/track-order');
+})->name('track.order.short');
+
+// Public tracking page (no auth)
+Route::get('/track-order', [PublicTrackingController::class, 'index'])->name('public.track.index');
+Route::post('/track-order', [PublicTrackingController::class, 'track'])->name('public.track.search');
+
+// ===============================================
 // 🔑 AUTHENTICATION
 // ===============================================
 Route::middleware('guest')->group(function () {
@@ -110,12 +124,13 @@ Route::prefix('orders')->name('orders.')->group(function () {
     // Guest accessible
     Route::get('/lookup', [OrderController::class, 'showLookup'])->name('lookup.show');
     Route::post('/lookup', [OrderController::class, 'lookup'])->name('lookup');
-    Route::get('/track/{orderNumber}', [OrderController::class, 'track'])->name('track');
+    // Tracking is handled below in the dedicated group
 
     Route::get('/{orderNumber}', [OrderController::class, 'show'])->name('show');
     Route::post('/{orderNumber}/upload-payment', [OrderController::class, 'uploadPaymentProof'])->name('upload-payment');
     Route::post('/{orderNumber}/cancel', [OrderController::class, 'cancel'])->name('cancel');
     Route::get('/{orderNumber}/items/{item}/download', [OrderController::class, 'downloadDesignFile'])->name('download-design');
+    Route::get('/{orderNumber}/invoice', [OrderController::class, 'downloadInvoice'])->name('download-invoice');
 
     // Auth only
     Route::middleware(['auth'])->group(function () {
@@ -149,5 +164,14 @@ Route::group(['prefix' => 'track', 'as' => 'orders.track.'], function() {
 Route::get('orders/track/{orderNumber}', function($orderNumber) {
     return redirect()->route('orders.track.verify', $orderNumber, 301);
 })->where('orderNumber', 'DP-\d{8}-\d{3}');
+
+// ===============================================
+// 📊 ADMIN REPORTS
+// ===============================================
+use App\Http\Controllers\Admin\ReportController;
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/reports/download', [ReportController::class, 'downloadSalesReport'])->name('reports.download');
+});
 
 

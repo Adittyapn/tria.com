@@ -21,4 +21,13 @@
     <a href="#" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">Plakat</a>
     <a href="#" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">Kartu Nama</a>
     <a href="#" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">Buku</a>
+    <a
+        href="{{ route('public.track.index') }}"
+        class="text-gray-700 hover:text-orange-500 whitespace-nowrap font-medium transition-colors flex items-center"
+    >
+        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 2a6 6 0 00-6 6c0 4.418 6 10 6 10s6-5.582 6-10a6 6 0 00-6-6zm0 8a2 2 0 110-4 2 2 0 010 4z" />
+        </svg>
+        Lacak Pesanan
+    </a>
 </nav>

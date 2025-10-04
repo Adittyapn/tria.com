@@ -3,7 +3,7 @@
 return [
     [
         'badge' => 'Digital Printing Solution',
-        'title' => '<span>Wujudkan</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-yellow-400">Ide Kreatif</span> <span>Anda</span>',
+        'title' => '<span>Wujudkan</span> <span class="bg-brand-orange bg-clip-text text-transparent">Ide Kreatif</span> <span>Anda</span>',
         'description' => 'Solusi cetak digital premium dengan kualitas terbaik dan harga yang kompetitif untuk semua kebutuhan bisnis Anda.',
         'backgroundClass' => 'bg-gradient-to-r from-navy-900 to-blue-800',
         'buttons' => [
@@ -40,7 +40,7 @@ return [
     ],
     [
         'badge' => 'Quality Guaranteed',
-        'title' => '<span>Kualitas</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-yellow-400">Terdepan</span> <span>Hasil Memuaskan</span>',
+        'title' => '<span>Kualitas</span> <span class="bg-brand-orange bg-clip-text text-transparent">Terdepan</span> <span>Hasil Memuaskan</span>',
         'description' => 'Teknologi cetak terkini dengan material berkualitas tinggi untuk hasil yang sempurna setiap saat.',
         'backgroundClass' => 'bg-gradient-to-r from-blue-800 to-navy-900',
         'buttons' => [
@@ -77,7 +77,7 @@ return [
     ],
     [
         'badge' => 'Custom Design Service',
-        'title' => '<span>Desain</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-yellow-400">Custom</span> <span>Sesuai Keinginan</span>',
+        'title' => '<span>Desain</span> <span class="bg-brand-orange bg-clip-text text-transparent">Custom</span> <span>Sesuai Keinginan</span>',
         'description' => 'Tim desainer berpengalaman siap membantu mewujudkan konsep kreatif Anda menjadi produk yang menakjubkan.',
         'backgroundClass' => 'bg-gradient-to-r from-gray-700 to-navy-900',
         'buttons' => [

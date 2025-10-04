@@ -165,7 +165,7 @@ class ShippingController extends Controller
             $validated = $request->validate([
                 'destination_city_id' => 'required|integer',
                 'weight' => 'required|numeric|min:0.1',
-                'courier' => 'nullable|string|in:jne,pos,tiki,sicepat,jnt,ninja,lion,anteraja,rex,wahana,all'
+                'courier' => 'nullable|string|in:jne,pos,tiki,jnt,all'
             ]);
 
             Log::info('ShippingController: calculateCost called', $validated);

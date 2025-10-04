@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -173,10 +174,16 @@ class OrderController extends Controller
     {
         $ip = $request->ip();
 
-        $limits = [
-            'token' => ['max' => 20, 'minutes' => 60],      // 20 token access per hour
-            'verify' => ['max' => 5, 'minutes' => 60],       // 5 verify attempts per hour
-        ];
+        // ✅ More lenient limits for development/local environment
+        $limits = config('app.env') === 'local' 
+            ? [
+                'token' => ['max' => 100, 'minutes' => 60],      // 100 token access per hour (development)
+                'verify' => ['max' => 50, 'minutes' => 60],      // 50 verify attempts per hour (development)
+            ]
+            : [
+                'token' => ['max' => 20, 'minutes' => 60],       // 20 token access per hour (production)
+                'verify' => ['max' => 5, 'minutes' => 60],       // 5 verify attempts per hour (production)
+            ];
 
         $limit = $limits[$method];
         $key = "tracking_rate_limit_{$method}_{$ip}";
@@ -184,11 +191,12 @@ class OrderController extends Controller
         $attempts = Cache::get($key, 0);
 
         if ($attempts >= $limit['max']) {
-            \Log::warning("Rate limit exceeded for tracking", [
+            Log::warning("Rate limit exceeded for tracking", [
                 'ip' => $ip,
                 'method' => $method,
                 'attempts' => $attempts,
-                'user_agent' => $request->userAgent()
+                'user_agent' => $request->userAgent(),
+                'environment' => config('app.env')
             ]);
 
             abort(429, 'Terlalu banyak percobaan. Coba lagi dalam ' . $limit['minutes'] . ' menit.');
@@ -202,7 +210,7 @@ class OrderController extends Controller
      */
     private function logTrackingAccess(Request $request, Order $order, string $method)
     {
-        \Log::info('Order tracking accessed', [
+        Log::info('Order tracking accessed', [
             'order_number' => $order->order_number,
             'customer_email' => $order->customer->email,
             'access_method' => $method,
@@ -218,7 +226,7 @@ class OrderController extends Controller
      */
     private function logSuspiciousActivity(Request $request, $orderNumber, string $reason, $email = null)
     {
-        \Log::warning('Suspicious tracking activity', [
+        Log::warning('Suspicious tracking activity', [
             'order_number' => $orderNumber,
             'reason' => $reason,
             'email_attempted' => $email,
@@ -334,7 +342,7 @@ class OrderController extends Controller
                 'notes' => ($order->notes ?? '') . $uploadLog
             ]);
 
-            \Log::info('Payment proof uploaded', [
+            Log::info('Payment proof uploaded', [
                 'order_number' => $order->order_number,
                 'customer_email' => $order->customer->email,
                 'file_path' => $paymentProofPath,
@@ -362,7 +370,7 @@ class OrderController extends Controller
             }
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            \Log::error('Payment proof upload failed', [
+            Log::error('Payment proof upload failed', [
                 'order_number' => $orderNumber,
                 'error' => $e->getMessage(),
                 'ip' => $request->ip()
@@ -439,7 +447,7 @@ class OrderController extends Controller
             ]);
 
             // ✅ Log cancellation
-            \Log::info('Order cancelled', [
+            Log::info('Order cancelled', [
                 'order_number' => $order->order_number,
                 'reason' => $validatedData['cancellation_reason'],
                 'cancelled_by' => Auth::id() ? 'authenticated_user' : 'verified_guest',
@@ -493,7 +501,7 @@ class OrderController extends Controller
             $fileName = basename($orderItem->design_file_path);
 
             // ✅ Log file download
-            \Log::info('Design file downloaded', [
+            Log::info('Design file downloaded', [
                 'order_number' => $order->order_number,
                 'file_path' => $orderItem->design_file_path,
                 'downloaded_by' => Auth::id() ? 'authenticated_user' : 'verified_guest',
@@ -504,6 +512,46 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             abort(404, 'File tidak dapat diunduh');
+        }
+    }
+
+    /**
+     * Download invoice PDF
+     */
+    public function downloadInvoice($orderNumber)
+    {
+        try {
+            $order = Order::with(['customer', 'items.product'])
+                ->where('order_number', $orderNumber)
+                ->firstOrFail();
+
+            // ✅ Check access (admin, owner, or verified guest)
+            if (!$this->canAccessOrderFull($order) && !$this->hasVerifiedAccess($orderNumber) && !$this->isAdmin()) {
+                abort(403, 'Anda tidak memiliki akses ke invoice ini');
+            }
+
+            // ✅ Log invoice download
+            Log::info('Invoice downloaded', [
+                'order_number' => $order->order_number,
+                'downloaded_by' => Auth::id() ? 'user_' . Auth::id() : 'verified_guest',
+                'ip' => request()->ip()
+            ]);
+
+            // Generate PDF
+            $pdf = \PDF::loadView('orders.invoice', compact('order'));
+            
+            // Set paper size and orientation
+            $pdf->setPaper('a4', 'portrait');
+            
+            // Download with filename
+            return $pdf->download('Invoice-' . $order->order_number . '.pdf');
+
+        } catch (\Exception $e) {
+            Log::error('Invoice download failed', [
+                'order_number' => $orderNumber,
+                'error' => $e->getMessage()
+            ]);
+            abort(500, 'Invoice tidak dapat diunduh');
         }
     }
 
@@ -542,7 +590,14 @@ class OrderController extends Controller
 
     private function isAdmin(): bool
     {
-        return Auth::check() && Auth::user()->hasRole('admin');
+        if (!Auth::check()) {
+            return false;
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
+        return $user->hasRole('admin');
     }
 
     private function getTrackingSteps(Order $order): array

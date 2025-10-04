@@ -168,6 +168,83 @@
             <div class="grid lg:grid-cols-3 gap-8">
                 <!-- Main Content -->
                 <div class="lg:col-span-2 space-y-6">
+                    {{-- Download Invoice Button - Only show when payment is verified --}}
+                    @if ($order->payment_status === 'verified')
+                        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div
+                                        class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4"
+                                    >
+                                        <svg
+                                            class="w-6 h-6 text-white"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                            ></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-gray-900">Invoice Pesanan</h3>
+                                        <p class="text-sm text-gray-600">Download invoice untuk arsip Anda</p>
+                                    </div>
+                                </div>
+                                <a
+                                    href="{{ route('orders.download-invoice', $order->order_number) }}"
+                                    target="_blank"
+                                    class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center"
+                                >
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        ></path>
+                                    </svg>
+                                    Download Invoice
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Verifikasi Pesanan --}}
+                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white">
+                        <div class="flex items-center mb-3">
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2-2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                ></path>
+                            </svg>
+                            <h3 class="font-bold text-lg">Verifikasi Pesanan</h3>
+                        </div>
+                        <p class="text-blue-100 text-sm mb-4">
+                            Untuk upload bukti pembayaran atau cancel order, verifikasi dengan email Anda.
+                        </p>
+                        <a
+                            href="{{ route('orders.track.verify', $order->order_number) }}"
+                            class="inline-flex items-center bg-white text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-lg transition-colors"
+                        >
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                ></path>
+                            </svg>
+                            Verifikasi Email
+                        </a>
+                    </div>
                     <!-- Progress Timeline -->
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                         <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
@@ -184,7 +261,7 @@
                                     d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                                 ></path>
                             </svg>
-                            Progress Pesanan
+                            Progress Pesanan anda
                         </h3>
 
                         <div class="space-y-4">
@@ -605,38 +682,6 @@
                                 </p>
                             </div>
                         @endif
-                    </div>
-
-                    <!-- Need Full Access Banner -->
-                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white">
-                        <div class="flex items-center mb-3">
-                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2-2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                ></path>
-                            </svg>
-                            <h3 class="font-bold text-lg">Butuh Akses Lebih?</h3>
-                        </div>
-                        <p class="text-blue-100 text-sm mb-4">
-                            Untuk upload bukti pembayaran atau cancel order, verifikasi dengan email Anda.
-                        </p>
-                        <a
-                            href="{{ route('orders.track.verify', $order->order_number) }}"
-                            class="inline-flex items-center bg-white text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-lg transition-colors"
-                        >
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                ></path>
-                            </svg>
-                            Verifikasi Email
-                        </a>
                     </div>
                 </div>
             </div>

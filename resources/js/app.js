@@ -1,4 +1,5 @@
 import "./bootstrap";
+import "./chart-rupiah-formatter";
 
 // Alpine.js sudah dihandle oleh Livewire v3
 // Tidak perlu import Alpine secara terpisah

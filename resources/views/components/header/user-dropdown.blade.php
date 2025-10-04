@@ -24,7 +24,7 @@
             @role('super_admin')
                 <!-- Super Admin Menu -->
                 <a
-                    href="/admin/dashboard"
+                    href="/dashboard"
                     class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                     <svg
@@ -48,7 +48,7 @@
             @role('customer')
                 <!-- Customer Menu -->
                 <a
-                    href="/orders"
+                    href="/dashboard/orders"
                     class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                     <svg
@@ -71,7 +71,7 @@
 
             <!-- Common Menu Items -->
             <a
-                href="/profile"
+                href="/dashboard/my-profile"
                 class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             >
                 <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #000334">
@@ -86,7 +86,7 @@
             </a>
 
             <a
-                href="/settings"
+                href="/dashboard/settings"
                 class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             >
                 <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #000334">
