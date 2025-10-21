@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Models\Order;
-use App\Models\Customer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,17 +13,11 @@ use Filament\Tables\Table;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Notifications\Notification;
 
 class OrderResource extends Resource
@@ -436,12 +429,13 @@ class OrderResource extends Resource
                     }),
 
                 Action::make('download_payment_proof')
-                    ->label('Payment Proof')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->color('gray')
-                    ->visible(fn (Order $record): bool => !empty($record->payment_proof))
-                    ->url(fn (Order $record): string => Storage::disk('public')->url($record->payment_proof))
-                    ->openUrlInNewTab(),
+                ->label('Payment Proof')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('gray')
+                ->visible(fn (Order $record): bool => !empty($record->payment_proof))
+                ->url(fn (Order $record): string => asset('storage/' . $record->payment_proof))
+                
+                ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -661,16 +655,17 @@ class OrderResource extends Resource
         $customer = $order->customer;
         
         // Message dari Admin ke Customer untuk reminder pembayaran
-        $message = "Halo *{$customer->name}* 👋\n\n";
-        $message .= "Terima kasih telah berbelanja di *Tria Digital Printing*! 🎉\n\n";
+        // Menggunakan Unicode escape sequences untuk emoji
+        $message = "Halo *{$customer->name}* \u{1F44B}\n\n"; // 👋
+        $message .= "Terima kasih telah berbelanja di *Tria Digital Printing*! \u{1F389}\n\n"; // 🎉
         
         $message .= "Pesanan Anda telah kami terima dengan detail:\n\n";
         
-        $message .= "📋 *Detail Pesanan:*\n";
+        $message .= "\u{1F4CB} *Detail Pesanan:*\n"; // 📋
         $message .= "Order ID: *#{$order->order_number}*\n";
         $message .= "Tanggal: " . $order->created_at->format('d M Y, H:i') . " WIB\n\n";
         
-        $message .= "📦 *Produk yang Dipesan:*\n";
+        $message .= "\u{1F4E6} *Produk yang Dipesan:*\n"; // 📦
         foreach ($order->items as $index => $item) {
             $productName = $item->product ? $item->product->name : 'Produk';
             $message .= ($index + 1) . ". {$productName} ({$item->quantity}x)\n";
@@ -682,7 +677,7 @@ class OrderResource extends Resource
         }
         $message .= "\n";
         
-        $message .= "💰 *Total Pembayaran:*\n";
+        $message .= "\u{1F4B0} *Total Pembayaran:*\n"; // 💰
         $message .= "*Rp " . number_format($order->total_amount, 0, ',', '.') . "*\n\n";
         
         $message .= "─────────────────────\n\n";
@@ -690,45 +685,45 @@ class OrderResource extends Resource
         // Conditional message based on order status
         if ($order->status === Order::STATUS_PENDING_PAYMENT || 
             $order->payment_status === 'pending') {
-            $message .= "⚠️ *LANGKAH SELANJUTNYA:*\n\n";
+            $message .= "\u{26A0}\u{FE0F} *LANGKAH SELANJUTNYA:*\n\n"; // ⚠️
             $message .= "Untuk memproses pesanan Anda, mohon segera melakukan:\n\n";
             
-            $message .= "1️⃣ *Transfer pembayaran* ke rekening kami:\n";
+            $message .= "\u{0031}\u{FE0F}\u{20E3} *Transfer pembayaran* ke rekening kami:\n"; // 1️⃣
             $message .= "   Bank: [NAMA BANK]\n";
             $message .= "   No. Rek: [NOMOR REKENING]\n";
             $message .= "   Atas Nama: [NAMA PEMILIK]\n\n";
             
-            $message .= "2️⃣ *Upload bukti transfer* melalui:\n";
-            $message .= "   🔗 " . ($order->hasSecureTracking() 
+            $message .= "\u{0032}\u{FE0F}\u{20E3} *Upload bukti transfer* melalui:\n"; // 2️⃣
+            $message .= "   \u{1F517} " . ($order->hasSecureTracking() // 🔗
                 ? $order->getSecureTrackingUrl() 
                 : route('orders.show', $order->order_number)) . "\n\n";
             
-            $message .= "3️⃣ Setelah pembayaran kami verifikasi, pesanan akan segera kami proses ⚡\n\n";
+            $message .= "\u{0033}\u{FE0F}\u{20E3} *Setelah pembayaran kami verifikasi*, pesanan akan segera kami proses \u{26A1}\n\n"; // 3️⃣ ⚡
             
             $message .= "─────────────────────\n\n";
             
-            $message .= "💡 *Tips:*\n";
+            $message .= "\u{1F4A1} *Tips:*\n"; // 💡
             $message .= "• Upload bukti transfer paling lambat 1x24 jam\n";
             $message .= "• Pastikan nominal transfer sesuai dengan total di atas\n";
             $message .= "• Simpan link tracking untuk cek status pesanan\n\n";
         } else {
-            $message .= "📊 *Status Pesanan:*\n";
+            $message .= "\u{1F4CA} *Status Pesanan:*\n"; // 📊
             $message .= "Order: {$order->status_label}\n";
             $message .= "Pembayaran: {$order->payment_status_label}\n\n";
             
-            $message .= "📍 *Pengiriman:*\n";
+            $message .= "\u{1F4CD} *Pengiriman:*\n"; // 📍
             $message .= "{$order->full_shipping_address}\n";
             $message .= "Kurir: {$order->shipping_service_display}\n\n";
             
             if ($order->notes) {
-                $message .= "📝 *Catatan:*\n{$order->notes}\n\n";
+                $message .= "\u{1F4DD} *Catatan:*\n{$order->notes}\n\n"; // 📝
             }
         }
         
-        $message .= "Ada pertanyaan? Silakan balas pesan ini! 😊\n\n";
+        $message .= "Ada pertanyaan? Silakan balas pesan ini! \u{1F60A}\n\n"; // 😊
         
         $message .= "Terima kasih,\n";
-        $message .= "*Tria Digital Printing Team* �️";
+        $message .= "*Tria Digital Printing Team* \u{00AE}\u{FE0F}"; // ®️
         
         // Get customer phone
         $customerPhone = $customer->phone ? preg_replace('/[^0-9]/', '', $customer->phone) : '';

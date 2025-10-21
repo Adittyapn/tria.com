@@ -25,30 +25,6 @@
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             <!-- Flash Sale - Special category (tidak ada di database) -->
-            <div class="group cursor-pointer" onclick="showComingSoonModal('Flash Sale')">
-                <div
-                    class="bg-gradient-to-br from-brand-orange to-orange-600 rounded-2xl p-6 text-center transform transition-all hover:scale-105 hover:shadow-2xl h-full relative overflow-hidden"
-                >
-                    <div
-                        class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                    ></div>
-                    <div class="relative z-10">
-                        <div class="w-12 h-12 bg-white/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                                />
-                            </svg>
-                        </div>
-                        <h3 class="text-white font-bold text-lg mb-2">Flash Sale</h3>
-                        <p class="text-white/80 text-sm">Penawaran terbatas</p>
-                    </div>
-                </div>
-            </div>
-
             @php
                 // Map kategori statis dengan warna
                 $staticCategories = [
@@ -153,58 +129,3 @@
 </section>
 
 <!-- Coming Soon Modal -->
-<div id="comingSoonModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center transform transition-all">
-        <div class="w-16 h-16 bg-brand-cream rounded-full mx-auto mb-6 flex items-center justify-center">
-            <svg class="w-8 h-8 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-        </div>
-        <h3 class="text-2xl font-bold text-navy-900 mb-4">Segera Hadir!</h3>
-        <p class="text-gray-600 mb-6">
-            Kategori <span id="categoryName" class="font-semibold text-brand-orange"></span> sedang dalam pengembangan dan akan segera tersedia.
-        </p>
-        <p class="text-sm text-gray-500 mb-6">
-            Daftarkan email Anda untuk mendapatkan notifikasi ketika kategori ini sudah tersedia.
-        </p>
-        <div class="flex gap-3">
-            <button onclick="closeComingSoonModal()" class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                Tutup
-            </button>
-            <button class="flex-1 px-6 py-3 bg-brand-orange text-white rounded-lg hover:bg-orange-600 transition-colors">
-                Beritahu Saya
-            </button>
-        </div>
-    </div>
-</div>
-
-<script>
-function showComingSoonModal(categoryName) {
-    document.getElementById('categoryName').textContent = categoryName;
-    const modal = document.getElementById('comingSoonModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeComingSoonModal() {
-    const modal = document.getElementById('comingSoonModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-    document.body.style.overflow = '';
-}
-
-// Close modal when clicking outside
-document.getElementById('comingSoonModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeComingSoonModal();
-    }
-});
-
-// Close modal with Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeComingSoonModal();
-    }
-});
-</script>
