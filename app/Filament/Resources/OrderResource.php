@@ -335,6 +335,14 @@ class OrderResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
 
+                // WhatsApp Contact Action
+                Action::make('whatsapp')
+                    ->label('WhatsApp')
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->color('success')
+                    ->url(fn (Order $record): string => static::generateWhatsAppUrl($record))
+                    ->openUrlInNewTab(),
+
                 // Quick status update actions
                 Action::make('mark_paid')
                     ->label('Mark Paid')
@@ -637,5 +645,105 @@ class OrderResource extends Resource
     public static function getNavigationBadgeColor(): string|array|null
     {
         return 'warning';
+    }
+
+    /**
+     * Generate WhatsApp URL with pre-filled message
+     */
+    /**
+     * Generate WhatsApp URL for admin to contact customer
+     * Message: Reminder untuk upload bukti pembayaran
+     */
+    public static function generateWhatsAppUrl(Order $order): string
+    {
+        // Eager load relationships
+        $order->load(['customer', 'items.product']);
+        $customer = $order->customer;
+        
+        // Message dari Admin ke Customer untuk reminder pembayaran
+        $message = "Halo *{$customer->name}* 👋\n\n";
+        $message .= "Terima kasih telah berbelanja di *Tria Digital Printing*! 🎉\n\n";
+        
+        $message .= "Pesanan Anda telah kami terima dengan detail:\n\n";
+        
+        $message .= "📋 *Detail Pesanan:*\n";
+        $message .= "Order ID: *#{$order->order_number}*\n";
+        $message .= "Tanggal: " . $order->created_at->format('d M Y, H:i') . " WIB\n\n";
+        
+        $message .= "📦 *Produk yang Dipesan:*\n";
+        foreach ($order->items as $index => $item) {
+            $productName = $item->product ? $item->product->name : 'Produk';
+            $message .= ($index + 1) . ". {$productName} ({$item->quantity}x)\n";
+            if ($item->custom_size_width && $item->custom_size_height) {
+                $width = $item->custom_size_width / 100;
+                $height = $item->custom_size_height / 100;
+                $message .= "   Ukuran: {$width}m x {$height}m\n";
+            }
+        }
+        $message .= "\n";
+        
+        $message .= "💰 *Total Pembayaran:*\n";
+        $message .= "*Rp " . number_format($order->total_amount, 0, ',', '.') . "*\n\n";
+        
+        $message .= "─────────────────────\n\n";
+        
+        // Conditional message based on order status
+        if ($order->status === Order::STATUS_PENDING_PAYMENT || 
+            $order->payment_status === 'pending') {
+            $message .= "⚠️ *LANGKAH SELANJUTNYA:*\n\n";
+            $message .= "Untuk memproses pesanan Anda, mohon segera melakukan:\n\n";
+            
+            $message .= "1️⃣ *Transfer pembayaran* ke rekening kami:\n";
+            $message .= "   Bank: [NAMA BANK]\n";
+            $message .= "   No. Rek: [NOMOR REKENING]\n";
+            $message .= "   Atas Nama: [NAMA PEMILIK]\n\n";
+            
+            $message .= "2️⃣ *Upload bukti transfer* melalui:\n";
+            $message .= "   🔗 " . ($order->hasSecureTracking() 
+                ? $order->getSecureTrackingUrl() 
+                : route('orders.show', $order->order_number)) . "\n\n";
+            
+            $message .= "3️⃣ Setelah pembayaran kami verifikasi, pesanan akan segera kami proses ⚡\n\n";
+            
+            $message .= "─────────────────────\n\n";
+            
+            $message .= "💡 *Tips:*\n";
+            $message .= "• Upload bukti transfer paling lambat 1x24 jam\n";
+            $message .= "• Pastikan nominal transfer sesuai dengan total di atas\n";
+            $message .= "• Simpan link tracking untuk cek status pesanan\n\n";
+        } else {
+            $message .= "📊 *Status Pesanan:*\n";
+            $message .= "Order: {$order->status_label}\n";
+            $message .= "Pembayaran: {$order->payment_status_label}\n\n";
+            
+            $message .= "📍 *Pengiriman:*\n";
+            $message .= "{$order->full_shipping_address}\n";
+            $message .= "Kurir: {$order->shipping_service_display}\n\n";
+            
+            if ($order->notes) {
+                $message .= "📝 *Catatan:*\n{$order->notes}\n\n";
+            }
+        }
+        
+        $message .= "Ada pertanyaan? Silakan balas pesan ini! 😊\n\n";
+        
+        $message .= "Terima kasih,\n";
+        $message .= "*Tria Digital Printing Team* �️";
+        
+        // Get customer phone
+        $customerPhone = $customer->phone ? preg_replace('/[^0-9]/', '', $customer->phone) : '';
+        
+        // Format to international
+        if ($customerPhone && !str_starts_with($customerPhone, '62')) {
+            if (str_starts_with($customerPhone, '0')) {
+                $customerPhone = '62' . substr($customerPhone, 1);
+            } else {
+                $customerPhone = '62' . $customerPhone;
+            }
+        }
+        
+        $encodedMessage = urlencode($message);
+        
+        return "https://wa.me/{$customerPhone}?text={$encodedMessage}";
     }
 }

@@ -316,10 +316,7 @@
                                 style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"%236B7280\"><path fill-rule=\"evenodd\" d=\"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z\" clip-rule=\"evenodd\"/></svg>'); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;"
                                 required
                             >
-                                <option value="">
-                                    <span x-show="loadingProvinces">Memuat provinsi...</span>
-                                    <span x-show="!loadingProvinces">Pilih Provinsi</span>
-                                </option>
+                                <option value="" x-text="loadingProvinces ? 'Memuat provinsi...' : 'Pilih Provinsi'"></option>
                                 <template x-for="province in provinces" :key="province.province_id">
                                     <option :value="province.province_id" x-text="province.province"></option>
                                 </template>
@@ -368,11 +365,7 @@
                                 required
                                 :disabled="!form.shipping_province_id"
                             >
-                                <option value="">
-                                    <span x-show="loadingCities">Memuat kota...</span>
-                                    <span x-show="!loadingCities && !form.shipping_province_id">Pilih provinsi dulu</span>
-                                    <span x-show="!loadingCities && form.shipping_province_id">Pilih Kota</span>
-                                </option>
+                                <option value="" x-text="loadingCities ? 'Memuat kota...' : (!form.shipping_province_id ? 'Pilih provinsi dulu' : 'Pilih Kota')"></option>
                                 <template x-for="city in cities" :key="city.city_id">
                                     <option :value="city.city_id" x-text="city.city_name"></option>
                                 </template>
@@ -427,11 +420,7 @@
                                 style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"%236B7280\"><path fill-rule=\"evenodd\" d=\"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z\" clip-rule=\"evenodd\"/></svg>'); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;"
                                 :disabled="!form.shipping_city_id || loadingDistricts"
                             >
-                                <option value="">
-                                    <span x-show="loadingDistricts">Memuat kecamatan...</span>
-                                    <span x-show="!loadingDistricts && !form.shipping_city_id">Pilih kota dulu</span>
-                                    <span x-show="!loadingDistricts && form.shipping_city_id">Pilih Kecamatan</span>
-                                </option>
+                                <option value="" x-text="loadingDistricts ? 'Memuat kecamatan...' : (!form.shipping_city_id ? 'Pilih kota dulu' : 'Pilih Kecamatan')"></option>
                                 <template x-for="district in districts" :key="district.district_id">
                                     <option :value="district.district_id" x-text="district.district_name"></option>
                                 </template>
@@ -772,7 +761,7 @@
                             @click="processCheckout($event)"
                             type="submit"
                             :disabled="!canCheckout() || processing"
-                            class="w-full bg-blue-600 text-white py-4 px-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                            class="w-full bg-tria-navy text-white py-4 px-4 rounded-lg font-bold text-lg hover:bg-tria-navy-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                         >
                             <span x-show="!processing">
                                 <i class="fas fa-lock mr-2"></i>
@@ -812,10 +801,10 @@
         function checkoutManager() {
             return {
                 items: @json($items ?? []),
-                subtotal: {{ $subtotal ?? 0 }},
-                estimatedWeight: {{ $estimatedWeight ?? 1 }},
+                subtotal: @json($subtotal ?? 0),
+                estimatedWeight: @json($estimatedWeight ?? 1),
                 userData: @json($userData ?? null),
-                isBuyNow: {{ $isBuyNow ? 'true' : 'false' }},
+                isBuyNow: @json($isBuyNow ?? false),
 
                 form: {
                     customer_name: '',
@@ -1204,7 +1193,6 @@
                     this.errors = {};
 
                     try {
-                        console.log('Processing checkout with data:', this.form);
 
                         const response = await axios.post('/checkout/process', this.form);
 
@@ -1221,17 +1209,19 @@
                     } catch (error) {
                         this.processing = false;
 
-                        if (error.response?.status === 422) {
-                            this.errors = error.response.data.errors || {};
-                            this.showToast('Mohon periksa data yang diisi', 'error');
-                            console.log('Validation errors:', this.errors);
-                        } else {
-                            this.showToast(
-                                'Terjadi kesalahan: ' + (error.response?.data?.message || error.message),
-                                'error',
-                            );
-                        }
-                        console.error('Checkout error:', error);
+                            if (error.response?.status === 422) {
+                                // Populate field errors for the UI
+                                this.errors = error.response.data.errors || {};
+
+                                // Show the first available validation message in toast if present
+                                const firstError = this.errors && Object.values(this.errors)[0] ? Object.values(this.errors)[0][0] : null;
+                                this.showToast(firstError || error.response.data.message || 'Mohon periksa data yang diisi', 'error');
+                            } else {
+                                this.showToast(
+                                    'Terjadi kesalahan: ' + (error.response?.data?.message || error.message),
+                                    'error',
+                                );
+                            }
                     }
                 },
 

@@ -184,37 +184,7 @@
 
                 <!-- Help Section -->
                 @if ($isSecureOrder)
-                    <div class="px-6 pb-6">
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <div class="flex">
-                                <div class="flex-shrink-0">
-                                    <svg
-                                        class="w-5 h-5 text-yellow-600"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        ></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-3">
-                                    <h3 class="text-sm font-medium text-yellow-800 mb-1">
-                                        Tidak menemukan email tracking?
-                                    </h3>
-                                    <ul class="text-xs text-yellow-700 space-y-1">
-                                        <li>• Cek folder Spam/Junk email Anda</li>
-                                        <li>• Pastikan email yang dimasukkan sama dengan saat order</li>
-                                        <li>• Tunggu hingga 15 menit setelah checkout</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="px-6 pb-6"></div>
                 @endif
             </div>
 

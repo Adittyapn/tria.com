@@ -54,12 +54,13 @@
     }"
     @mouseenter="stopAutoSlide()"
     @mouseleave="autoSlide && startAutoSlide()"
-    class="carousel relative {{ $height }} overflow-hidden"
+    class="carousel relative {{ $height }}"
     id="{{ $id }}"
+    style="min-height: 100vh"
 >
     @if (count($slides) > 0)
         <!-- Slides Container -->
-        <div class="slides-container w-full h-full relative">
+        <div class="slides-container w-full relative">
             @foreach ($slides as $index => $slide)
                 <div
                     x-show="currentSlide === {{ $index }}"
@@ -69,7 +70,8 @@
                     x-transition:leave="transition ease-in duration-500"
                     x-transition:leave-start="opacity-100 transform translate-x-0"
                     x-transition:leave-end="opacity-0 transform -translate-x-full"
-                    class="slide absolute inset-0 w-full h-full bg-gradient-to-r from-blue-900 to-purple-900"
+                    class="slide w-full min-h-screen bg-gradient-to-r from-blue-900 to-purple-900"
+                    :class="currentSlide === {{ $index }} ? 'block' : 'hidden'"
                 >
                     <div
                         class="absolute inset-0 opacity-10"
@@ -77,8 +79,8 @@
                             background-image: url('data:image/svg+xml,%3Csvg width%3D%2760%27 height%3D%2760%27 viewBox%3D%270 0 60 60%27 xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg fill%3D%27none%27 fill-rule%3D%27evenodd%27%3E%3Cg fill%3D%27%23ffffff%27 fill-opacity%3D%270.4%27%3E%3Cpath d%3D%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E');
                         "
                     ></div>
-                    <div class="container mx-auto px-4 lg:px-8 h-full relative z-10">
-                        <div class="flex flex-col lg:flex-row items-center justify-between h-full py-8 lg:py-16">
+                    <div class="container mx-auto px-4 lg:px-8 relative z-10">
+                        <div class="flex flex-col lg:flex-row items-center justify-between min-h-screen py-8 lg:py-16">
                             <!-- Content Left -->
                             <div class="text-white space-y-6 lg:space-y-8 max-w-2xl lg:w-1/2 text-center lg:text-left">
                                 <div class="space-y-4 lg:space-y-6">
@@ -113,7 +115,9 @@
 
                                 <!-- Buttons -->
                                 @if (isset($slide['buttons']) && count($slide['buttons']) > 0)
-                                    <div class="flex flex-col sm:flex-row gap-3 lg:gap-4">
+                                    <div
+                                        class="flex flex-col sm:flex-row gap-3 lg:gap-4 items-center justify-center lg:justify-start"
+                                    >
                                         @foreach ($slide['buttons'] as $button)
                                             <button class="{{ $button['class'] }}">
                                                 {{ $button['text'] }}
@@ -145,7 +149,7 @@
                             @if (isset($slide['rightContent']))
                                 <div class="relative lg:w-1/2 mt-8 lg:mt-0">
                                     <div
-                                        class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl lg:rounded-3xl p-4 lg:p-6 border border-white border-opacity-20"
+                                        class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl lg:rounded-3xl p-4 lg:p-6 border border-white border-opacity-20 w-full"
                                     >
                                         <!-- Header -->
                                         <div class="md:flex items-center justify-between mb-4 lg:mb-6 hidden">
@@ -177,7 +181,7 @@
                                         </div>
 
                                         <!-- Products Grid -->
-                                        <div class="grid grid-cols-2 gap-3 lg:gap-4">
+                                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 gap-3 lg:gap-4 pb-4">
                                             @if (isset($slide['rightContent']['products']))
                                                 @foreach ($slide['rightContent']['products'] as $productIndex => $product)
                                                     <div
@@ -297,10 +301,10 @@
 
         <!-- Navigation Controls -->
         @if ($showControls && count($slides) > 1)
-            <div class="absolute inset-y-0 left-0 flex items-center z-20">
+            <div class="absolute left-4 top-1/2 transform -translate-y-1/2 z-20">
                 <button
                     @click="prevSlide()"
-                    class="ml-4 bg-black bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full transition-all duration-200 backdrop-blur-sm border border-white border-opacity-20"
+                    class="bg-black bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full transition-all duration-200 backdrop-blur-sm border border-white border-opacity-20"
                 >
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -308,10 +312,10 @@
                 </button>
             </div>
 
-            <div class="absolute inset-y-0 right-0 flex items-center z-20">
+            <div class="absolute right-4 top-1/2 transform -translate-y-1/2 z-20">
                 <button
                     @click="nextSlide()"
-                    class="mr-4 bg-black bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full transition-all duration-200 backdrop-blur-sm border border-white border-opacity-20"
+                    class="bg-black bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full transition-all duration-200 backdrop-blur-sm border border-white border-opacity-20"
                 >
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

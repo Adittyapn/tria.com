@@ -12,12 +12,14 @@
                 >
                     Konsultasi Gratis
                 </a>
-                <a
+                {{--
+                    <a
                     href="#"
                     class="bg-tria-orange hover:bg-tria-orange-light text-white px-8 py-4 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"
-                >
+                    >
                     Lihat Portfolio
-                </a>
+                    </a>
+                --}}
             </div>
         </div>
     </div>

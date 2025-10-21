@@ -113,4 +113,17 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Email Address
+    |--------------------------------------------------------------------------
+    |
+    | Email address untuk menerima notifikasi order baru dan notifikasi
+    | penting lainnya. Jika ingin mengirim ke multiple admin, gunakan
+    | array: ['admin1@tria.com', 'admin2@tria.com']
+    |
+    */
+
+    'admin_email' => env('MAIL_ADMIN_EMAIL', 'adityapn2731@gmail.com'),
+
 ];

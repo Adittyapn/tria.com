@@ -11,6 +11,11 @@
             content="@yield('description', 'Jasa cetak digital custom terpercaya. Stiker, banner, merchandise, dan berbagai produk printing berkualitas tinggi')"
         />
 
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon.ico') }}" />
+
         <!-- SweetAlert2 CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
 

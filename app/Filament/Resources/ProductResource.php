@@ -53,6 +53,8 @@ class ProductResource extends Resource
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(Product::class, 'slug', ignoreRecord: true)
+                                    ->disabled()
+                                    ->dehydrated()
                                     ->helperText('URL untuk produk di website'),
                             ]),
 
@@ -217,6 +219,8 @@ class ProductResource extends Resource
                                     ->label('Satuan')
                                     ->required()
                                     ->maxLength(20)
+                                    ->disabled()
+                                    ->dehydrated()
                                     ->placeholder('pcs, m², meter, set'),
 
                                 Forms\Components\TextInput::make('minimum_quantity')

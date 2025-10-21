@@ -5,6 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>@yield('title', 'Tria Digital - Authentication')</title>
 
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon.ico') }}" />
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

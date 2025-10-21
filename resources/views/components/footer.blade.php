@@ -1,6 +1,6 @@
 <footer class="text-white pt-12 pb-8" style="background-color: #000334">
     <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 justify-end">
             <!-- Company Info -->
             <div>
                 <div class="flex items-center space-x-3 mb-4">
@@ -79,28 +79,30 @@
             </div>
 
             <!-- Customer Service -->
-            <div>
+            {{--
+                <div>
                 <h4 class="text-lg font-semibold mb-4">Layanan Pelanggan</h4>
                 <ul class="space-y-2">
-                    <li>
-                        <a href="/cara-pemesanan" class="text-gray-400 hover:text-white transition-colors">
-                            Cara Pemesanan
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/pengiriman" class="text-gray-400 hover:text-white transition-colors">Pengiriman</a>
-                    </li>
-                    <li>
-                        <a href="/kebijakan-return" class="text-gray-400 hover:text-white transition-colors">
-                            Kebijakan Return
-                        </a>
-                    </li>
-                    <li><a href="/faq" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
-                    <li>
-                        <a href="/kontak" class="text-gray-400 hover:text-white transition-colors">Hubungi Kami</a>
-                    </li>
+                <li>
+                <a href="/cara-pemesanan" class="text-gray-400 hover:text-white transition-colors">
+                Cara Pemesanan
+                </a>
+                </li>
+                <li>
+                <a href="/pengiriman" class="text-gray-400 hover:text-white transition-colors">Pengiriman</a>
+                </li>
+                <li>
+                <a href="/kebijakan-return" class="text-gray-400 hover:text-white transition-colors">
+                Kebijakan Return
+                </a>
+                </li>
+                <li><a href="/faq" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+                <li>
+                <a href="/kontak" class="text-gray-400 hover:text-white transition-colors">Hubungi Kami</a>
+                </li>
                 </ul>
-            </div>
+                </div>
+            --}}
 
             <!-- Contact Info -->
             <div>
@@ -128,8 +130,8 @@
                             />
                         </svg>
                         <div class="text-gray-400">
-                            <p>Jl. Sukajadi No. 123</p>
-                            <p>Bandung, West Java 40162</p>
+                            <p>Jl. Pahlawan KHZ. Musthafa, Cipakat, Kec. Singaparna</p>
+                            <p>Tasikmalaya, West Java 46418</p>
                         </div>
                     </div>
                     <div class="flex items-center">
@@ -173,50 +175,52 @@
         </div>
 
         <!-- Payment Methods -->
-        <div class="border-t border-gray-700 mt-8 pt-8">
+        {{--
+            <div class="border-t border-gray-700 mt-8 pt-8">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-6 lg:space-y-0">
-                <div>
-                    <h5 class="text-sm font-semibold mb-3">Metode Pembayaran</h5>
-                    <div class="flex flex-wrap gap-2">
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-blue-600 px-2 py-1">BCA</span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-orange-600 px-2 py-1">BNI</span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-blue-800 px-2 py-1">BRI</span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-purple-600 px-2 py-1">OVO</span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-blue-500 px-2 py-1">DANA</span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-green-600 px-2 py-1">GOPAY</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h5 class="text-sm font-semibold mb-3">Pengiriman</h5>
-                    <div class="flex flex-wrap gap-2">
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-red-600 px-2 py-1">JNE</span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-red-500 px-2 py-1">J&T</span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-blue-600 px-2 py-1">SiCepat</span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-green-600 px-2 py-1">AnterAja</span>
-                        </div>
-                    </div>
-                </div>
+            <div>
+            <h5 class="text-sm font-semibold mb-3">Metode Pembayaran</h5>
+            <div class="flex flex-wrap gap-2">
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-blue-600 px-2 py-1">BCA</span>
             </div>
-        </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-orange-600 px-2 py-1">BNI</span>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-blue-800 px-2 py-1">BRI</span>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-purple-600 px-2 py-1">OVO</span>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-blue-500 px-2 py-1">DANA</span>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-green-600 px-2 py-1">GOPAY</span>
+            </div>
+            </div>
+            </div>
+            <div>
+            <h5 class="text-sm font-semibold mb-3">Pengiriman</h5>
+            <div class="flex flex-wrap gap-2">
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-red-600 px-2 py-1">JNE</span>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-red-500 px-2 py-1">J&T</span>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-blue-600 px-2 py-1">SiCepat</span>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+            <span class="text-xs font-bold text-green-600 px-2 py-1">AnterAja</span>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+        --}}
 
         <!-- Copyright -->
         <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">

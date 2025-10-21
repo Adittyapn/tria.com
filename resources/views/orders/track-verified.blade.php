@@ -116,8 +116,8 @@
                 @endphp
 
                 <div class="{{ $currentStatus['bg'] }} border {{ $currentStatus['text'] }} rounded-xl p-4 sm:p-6">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <div class="flex items-center">
+                    <div class="flex flex-col md:flex-row md:items-start md:gap-6 lg:gap-8">
+                        <div class="flex items-center md:w-1/2 lg:w-2/5">
                             <!-- Icon -->
 
                             @switch($currentStatus['icon'])
@@ -168,7 +168,7 @@
                                     <!-- Tambahkan icon lain sesuai sebelumnya -->
                             @endswitch
 
-                            <div>
+                            <div class="w-full">
                                 <h2 class="text-xl sm:text-2xl font-bold">{{ $order->status_label }}</h2>
                                 <p class="text-sm sm:text-base opacity-90 mt-1">
                                     @switch($order->status)
@@ -205,7 +205,9 @@
 
                                 <!-- Info Bank Jika Pending Payment -->
                                 @if ($order->status === 'pending_payment' && ! $order->payment_proof)
-                                    <div class="mt-4 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                    <div
+                                        class="mt-4 md:mt-0 md:mb-0 md:mr-6 lg:mr-8 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg w-full md:w-auto"
+                                    >
                                         <h3 class="font-semibold text-base sm:text-lg mb-2">Informasi Transfer</h3>
                                         <div class="text-sm sm:text-base opacity-90 space-y-1">
                                             <p>
@@ -231,16 +233,18 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full lg:w-auto">
+                        <div
+                            class="flex flex-col gap-3 w-full md:w-1/2 lg:w-3/5 md:justify-center md:items-stretch md:pl-4"
+                        >
                             <!-- Download Invoice Button - Only show when payment is verified -->
                             @if ($order->payment_status === 'verified')
                                 <a
                                     href="{{ route('orders.download-invoice', $order->order_number) }}"
                                     target="_blank"
-                                    class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
+                                    class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
                                 >
                                     <svg
-                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2"
+                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -259,10 +263,10 @@
                             @if ($order->status === 'pending_payment' && ! $order->payment_proof)
                                 <button
                                     onclick="openUploadModal()"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
                                 >
                                     <svg
-                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2"
+                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -276,15 +280,36 @@
                                     </svg>
                                     <span class="whitespace-nowrap">Upload Bukti Bayar</span>
                                 </button>
-                            @endif
 
-                            @if (in_array($order->status, ['pending_payment', 'paid']))
+                                <!-- QRIS payment button -->
                                 <button
-                                    onclick="openCancelModal()"
-                                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
+                                    onclick="openQrisModal()"
+                                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
                                 >
                                     <svg
-                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2"
+                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M3 7h4v10H3zM17 7h4v10h-4zM9 7h6v10H9z"
+                                        ></path>
+                                    </svg>
+                                    <span class="whitespace-nowrap">Bayar via QRIS</span>
+                                </button>
+                            @endif
+
+                            @if ($order->status === 'pending_payment' && ! $order->payment_proof)
+                                <button
+                                    onclick="openCancelModal()"
+                                    class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center text-sm sm:text-base"
+                                >
+                                    <svg
+                                        class="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -510,126 +535,7 @@
 
                         <div class="space-y-4">
                             @foreach ($order->items as $item)
-                                <div
-                                    class="flex items-start space-x-4 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:bg-gray-100 transition-colors"
-                                >
-                                    <!-- Product Image Placeholder -->
-                                    <div
-                                        class="flex-shrink-0 w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center"
-                                    >
-                                        @if ($item->product->image_url)
-                                            <img
-                                                src="{{ $item->product->image_url }}"
-                                                alt="{{ $item->product->name }}"
-                                                class="w-full h-full object-cover rounded-lg"
-                                            />
-                                        @else
-                                            <svg
-                                                class="w-8 h-8 text-gray-500"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                                ></path>
-                                            </svg>
-                                        @endif
-                                    </div>
-
-                                    <!-- Product Details -->
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="font-semibold text-gray-900 text-lg">{{ $item->product->name }}</h4>
-                                        <div class="mt-2 grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p class="text-sm text-gray-600">
-                                                    Jumlah:
-                                                    <span class="font-medium">{{ $item->quantity }} pcs</span>
-                                                </p>
-                                                @if ($item->custom_size)
-                                                    <p class="text-sm text-gray-600">
-                                                        Ukuran:
-                                                        <span class="font-medium">{{ $item->custom_size }}</span>
-                                                    </p>
-                                                @endif
-                                            </div>
-                                            <div>
-                                                @if ($item->selected_material)
-                                                    <p class="text-sm text-gray-600">
-                                                        Material:
-                                                        <span class="font-medium">{{ $item->selected_material }}</span>
-                                                    </p>
-                                                @endif
-
-                                                @if ($item->selected_finishing)
-                                                    <p class="text-sm text-gray-600">
-                                                        Finishing:
-                                                        <span class="font-medium">
-                                                            {{ $item->selected_finishing }}
-                                                        </span>
-                                                    </p>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        @if ($item->design_notes)
-                                            <div class="mt-3 p-3 bg-white rounded-lg border">
-                                                <p class="text-sm text-gray-700">
-                                                    <strong>Catatan Design:</strong>
-                                                    {{ $item->design_notes }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        <div class="mt-3 flex flex-wrap gap-2">
-                                            @if ($item->requires_design_service)
-                                                <span
-                                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
-                                                >
-                                                    <svg
-                                                        class="w-3 h-3 mr-1"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v1m0 0h6m-6 0V3m6 0a2 2 0 012 2v1M9 7h6m0 0v2M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M9 7v10a2 2 0 002 2h2a2 2 0 002-2V7m-6 0h6"
-                                                        ></path>
-                                                    </svg>
-                                                    Jasa Design
-                                                </span>
-                                            @endif
-
-                                            @if ($item->hasDesignFile())
-                                                <a
-                                                    href="{{ route('orders.download-design', ['orderNumber' => $order->order_number, 'item' => $item->id]) }}"
-                                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
-                                                >
-                                                    <svg
-                                                        class="w-3 h-3 mr-1"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707v6.586a2 2 0 01-2 2z"
-                                                        ></path>
-                                                    </svg>
-                                                    Download File
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
+                                <x-orders.item :item="$item" />
                             @endforeach
                         </div>
                     </div>
@@ -873,168 +779,9 @@
         </div>
     </div>
 
-    <!-- Upload Payment Modal -->
-    <div
-        id="uploadModal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50 overflow-y-auto"
-    >
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto my-8">
-            <div class="p-4 sm:p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg sm:text-xl font-bold text-gray-900">Upload Bukti Pembayaran</h3>
-                    <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600 p-1">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            ></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <form
-                    id="uploadForm"
-                    method="POST"
-                    action="{{ route('orders.upload-payment', $order->order_number) }}"
-                    enctype="multipart/form-data"
-                >
-                    @csrf
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">File Bukti Pembayaran</label>
-                            <div
-                                class="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 text-center hover:border-gray-400 transition-colors"
-                            >
-                                <input
-                                    type="file"
-                                    id="payment_proof"
-                                    name="payment_proof"
-                                    accept=".jpg,.jpeg,.png,.pdf"
-                                    required
-                                    class="hidden"
-                                />
-                                <label for="payment_proof" class="cursor-pointer block">
-                                    <svg
-                                        class="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-2"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                        ></path>
-                                    </svg>
-                                    <p class="text-sm text-gray-600">Klik untuk pilih file</p>
-                                    <p class="text-xs text-gray-500 mt-1">JPG, PNG, PDF (max 5MB)</p>
-                                </label>
-                            </div>
-                            <div id="fileName" class="text-sm text-gray-600 mt-2 hidden"></div>
-                        </div>
-
-                        <div>
-                            <label for="payment_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                Catatan (Opsional)
-                            </label>
-                            <textarea
-                                id="payment_notes"
-                                name="payment_notes"
-                                rows="3"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                                placeholder="Tambahkan catatan jika diperlukan..."
-                            ></textarea>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0 pt-4">
-                            <button
-                                type="button"
-                                onclick="closeUploadModal()"
-                                class="w-full sm:flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-colors text-sm sm:text-base"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                type="submit"
-                                class="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-colors text-sm sm:text-base"
-                            >
-                                Upload
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cancel Order Modal -->
-    <div
-        id="cancelModal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50 overflow-y-auto"
-    >
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto my-8">
-            <div class="p-4 sm:p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg sm:text-xl font-bold text-red-900">Batalkan Pesanan</h3>
-                    <button onclick="closeCancelModal()" class="text-gray-400 hover:text-gray-600 p-1">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            ></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-4">
-                    <p class="text-red-800 text-xs sm:text-sm">
-                        ⚠️ Pesanan yang sudah dibatalkan tidak dapat dikembalikan. Pastikan keputusan Anda.
-                    </p>
-                </div>
-
-                <form id="cancelForm" method="POST" action="{{ route('orders.cancel', $order->order_number) }}">
-                    @csrf
-                    <div class="space-y-4">
-                        <div>
-                            <label for="cancellation_reason" class="block text-sm font-medium text-gray-700 mb-2">
-                                Alasan Pembatalan
-                                <span class="text-red-500">*</span>
-                            </label>
-                            <textarea
-                                id="cancellation_reason"
-                                name="cancellation_reason"
-                                rows="4"
-                                required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base"
-                                placeholder="Jelaskan alasan Anda membatalkan pesanan ini..."
-                            ></textarea>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0 pt-4">
-                            <button
-                                type="button"
-                                onclick="closeCancelModal()"
-                                class="w-full sm:flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-colors text-sm sm:text-base"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                type="submit"
-                                class="w-full sm:flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-colors text-sm sm:text-base"
-                            >
-                                Ya, Batalkan
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    @include('orders.partials.upload-payment-modal')
+    @include('orders.partials.cancel-order-modal')
+    @include('orders.partials.qris-payment-modal')
 
     <style>
         /* Modal animations */
@@ -1154,6 +901,25 @@
             }, 300);
         }
 
+        function openQrisModal() {
+            const modal = document.getElementById('qrisModal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex', 'modal-enter');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeQrisModal() {
+            const modal = document.getElementById('qrisModal');
+            if (!modal) return;
+            modal.classList.add('modal-leave');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex', 'modal-enter', 'modal-leave');
+                document.body.classList.remove('overflow-hidden');
+            }, 300);
+        }
+
         // File Upload Enhancement
         document.addEventListener('DOMContentLoaded', function() {
             const fileInput = document.getElementById('payment_proof');
@@ -1221,11 +987,22 @@
                 }
             });
 
+            // QRIS modal outside click
+            const qrisModalEl = document.getElementById('qrisModal');
+            if (qrisModalEl) {
+                qrisModalEl.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeQrisModal();
+                    }
+                });
+            }
+
             // Keyboard shortcuts
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     closeUploadModal();
                     closeCancelModal();
+                    closeQrisModal();
                 }
             });
 
@@ -1235,7 +1012,8 @@
                     if (!document.hidden) {
                         // Don't refresh if modal is open
                         const modalsOpen = !document.getElementById('uploadModal').classList.contains('hidden') ||
-                                          !document.getElementById('cancelModal').classList.contains('hidden');
+                                          !document.getElementById('cancelModal').classList.contains('hidden') ||
+                                          (document.getElementById('qrisModal') && !document.getElementById('qrisModal').classList.contains('hidden'));
                         if (!modalsOpen) {
                             window.location.reload();
                         }

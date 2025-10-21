@@ -1,6 +1,8 @@
 // vite.config.js
+
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
+import strip from "@rollup/plugin-strip";
 
 export default defineConfig({
     plugins: [
@@ -22,6 +24,12 @@ export default defineConfig({
     ],
     build: {
         rollupOptions: {
+            plugins: [
+                strip({
+                    include: ["**/*.js", "**/*.ts", "**/*.vue"],
+                    functions: ["console.*", "assert.*", "debug", "alert"],
+                }),
+            ],
             output: {
                 manualChunks: {
                     // Pisahkan CSS untuk menghindari konflik

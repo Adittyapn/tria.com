@@ -22,6 +22,7 @@ use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Swis\Filament\Backgrounds\FilamentBackgroundsPlugin;
 use App\Filament\Auth\Registration;
 use Filament\Navigation\NavigationItem;
+use Filament\Navigation\NavigationGroup;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -34,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->registration(Registration::class) 
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue, 
             ])
             // Make the dashboard content wider on desktop so widgets/cards don't get truncated.
             // You can switch to 'full' if you prefer edge-to-edge content.
@@ -47,6 +48,8 @@ class AdminPanelProvider extends PanelProvider
                 ->discoverPages(in: app_path('Filament/PublicPages'), for: 'App\\Filament\\PublicPages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                \App\Filament\Widgets\NewOrdersAlertWidget::class,
+                \App\Filament\Widgets\LatestOrdersWidget::class,
                 \App\Filament\Widgets\AdminStatsOverview::class,
                 \App\Filament\Widgets\CustomerOrderStats::class,
                 \App\Filament\Widgets\CustomerRecentOrders::class,
@@ -57,8 +60,14 @@ class AdminPanelProvider extends PanelProvider
                 ->url(url('/')) 
                 ->icon('heroicon-o-home')
             ])
-
-
+            ->navigationGroups([
+                NavigationGroup::make('Catalog'),
+                NavigationGroup::make('Produk & Layanan'),
+                NavigationGroup::make('Transactions'),
+                NavigationGroup::make('Administration'),
+                NavigationGroup::make('Pelindung'),
+                NavigationGroup::make('Settings'),
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -70,15 +79,18 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
 
-                SetTheme::class,
+                // SetTheme::class,
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
                 BreezyCore::make()
                     ->myProfile(shouldRegisterUserMenu: true),
-                FilamentBackgroundsPlugin::make(),
-                ThemesPlugin::make(),
+                // FilamentBackgroundsPlugin::make(),
+                // ThemesPlugin::make(),
             ])
+            ->darkMode(false)
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->authMiddleware([
                 Authenticate::class,
             ])

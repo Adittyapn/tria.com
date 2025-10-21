@@ -5,6 +5,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Invoice {{ $order->order_number }}</title>
         <style>
+            /* Mendefinisikan Warna Brand Anda */
+            :root {
+                --tria-navy: #1e1b4b;
+                --tria-navy-light: #312e81;
+                --tria-orange: #ff6b35;
+                --tria-orange-light: #ff8c69;
+                --tria-orange-palest: #fff5f2; /* Latar belakang orange sangat muda */
+                --tria-orange-dark: #c2410c; /* Teks orange tua */
+                --tria-orange-darker: #9a3412; /* Teks orange sangat tua */
+            }
+
             * {
                 margin: 0;
                 padding: 0;
@@ -19,11 +30,18 @@
                 padding: 20px;
             }
 
+            /* ===== Penambahan Logo ===== */
+            .logo {
+                max-width: 56px; /* Sesuaikan ukuran logo Anda */
+                height: auto;
+                margin-bottom: 15px;
+            }
+
             .invoice-header {
                 display: table;
                 width: 100%;
                 margin-bottom: 30px;
-                border-bottom: 3px solid #2563eb;
+                border-bottom: 3px solid var(--tria-navy); /* Warna Baru */
                 padding-bottom: 15px;
             }
 
@@ -36,7 +54,7 @@
             .company-name {
                 font-size: 24px;
                 font-weight: bold;
-                color: #2563eb;
+                color: var(--tria-navy); /* Warna Baru */
                 margin-bottom: 5px;
             }
 
@@ -56,13 +74,20 @@
             .invoice-title {
                 font-size: 28px;
                 font-weight: bold;
-                color: #2563eb;
+                color: var(--tria-navy); /* Warna Baru */
                 margin-bottom: 10px;
             }
 
             .invoice-meta {
                 font-size: 11px;
-                line-height: 1.8;
+            }
+
+            /* Perbaikan untuk alignment status */
+            .invoice-meta > div {
+                margin-bottom: 8px;
+            }
+            .invoice-meta > div:last-child {
+                margin-bottom: 0;
             }
 
             .section {
@@ -72,7 +97,7 @@
             .section-title {
                 font-size: 14px;
                 font-weight: bold;
-                color: #2563eb;
+                color: var(--tria-navy); /* Warna Baru */
                 margin-bottom: 10px;
                 border-bottom: 2px solid #e5e7eb;
                 padding-bottom: 5px;
@@ -116,7 +141,7 @@
             }
 
             thead {
-                background: #2563eb;
+                background: var(--tria-navy); /* Warna Baru */
                 color: white;
             }
 
@@ -162,7 +187,7 @@
             }
 
             .total-row.grand-total {
-                background: #2563eb;
+                background: var(--tria-navy); /* Warna Baru */
                 color: white;
                 font-weight: bold;
                 font-size: 14px;
@@ -183,23 +208,24 @@
                 text-align: right;
             }
 
+            /* ===== Perubahan Warna Catatan (Orange) ===== */
             .notes {
                 clear: both;
                 margin-top: 40px;
                 padding: 15px;
-                background: #fffbeb;
-                border-left: 4px solid #f59e0b;
+                background: var(--tria-orange-palest); /* Latar orange muda */
+                border-left: 4px solid var(--tria-orange); /* Border orange */
                 border-radius: 5px;
             }
 
             .notes-title {
                 font-weight: bold;
-                color: #92400e;
+                color: var(--tria-orange-darker); /* Teks orange tua */
                 margin-bottom: 5px;
             }
 
             .notes-content {
-                color: #78350f;
+                color: var(--tria-orange-dark); /* Teks orange tua */
                 font-size: 11px;
                 line-height: 1.6;
             }
@@ -220,6 +246,10 @@
                 font-size: 10px;
                 font-weight: bold;
                 text-transform: uppercase;
+
+                /* Perbaikan untuk alignment status */
+                vertical-align: middle; /* Membuat badge sejajar di tengah teks */
+                margin-left: 5px; /* Memberi sedikit jarak dari label "Status:" */
             }
 
             .status-paid {
@@ -227,9 +257,10 @@
                 color: #065f46;
             }
 
+            /* ===== Perubahan Warna Status (Orange) ===== */
             .status-pending {
-                background: #fef3c7;
-                color: #92400e;
+                background: var(--tria-orange-palest); /* Latar orange muda */
+                color: var(--tria-orange-darker); /* Teks orange tua */
             }
 
             .status-shipped {
@@ -247,39 +278,77 @@
                 color: #6b7280;
                 margin-top: 3px;
             }
+
+            /* ===== CSS UNTUK WATERMARK LUNAS ===== */
+            .watermark {
+                position: fixed; /* 'fixed' agar posisinya tetap di tengah halaman PDF */
+                top: 50%;
+                left: 50%;
+
+                /* Trik untuk center + rotasi */
+                transform: translate(-50%, -50%) rotate(-45deg);
+
+                font-size: 100px; /* Ukuran font (bisa disesuaikan) */
+                font-weight: bold;
+
+                /* Warna hijau pudar (diambil dari warna status-paid) */
+                color: rgba(6, 95, 70, 0.15);
+
+                /* PENTING: kirim ke belakang konten */
+                z-index: -1;
+
+                text-transform: uppercase;
+                letter-spacing: 10px; /* Jarak antar huruf */
+
+                /* Agar tidak bisa terseleksi */
+                user-select: none;
+            }
         </style>
     </head>
     <body>
-        <!-- Header -->
+        {{-- ===== WATERMARK LUNAS ===== --}}
+        @if ($order->payment_status === 'verified')
+            <div class="watermark">LUNAS</div>
+        @endif
+
+        {{-- =========================== --}}
+
         <div class="invoice-header">
             <div class="company-info">
-                <div class="company-name">{{ config('app.name', 'Tria.com') }}</div>
+                <img src="{{ public_path('images/logo-tria.svg') }}" alt="Tria Logo" class="logo" />
+
+                <div class="company-name">{{ config('app.name', 'Triadigitalprinting.com') }}</div>
                 <div class="company-details">
                     Digital Printing & Custom Products
                     <br />
-                    Email: info @tria.com | Telp: (021) 1234-5678
+                    Email: info @triadigitalprinting.com | Telp: (021) 1234-5678
                     <br />
-                    Website: www.tria.com
+                    Website: www.triadigitalprinting.com
                 </div>
             </div>
             <div class="invoice-info">
                 <div class="invoice-title">INVOICE</div>
                 <div class="invoice-meta">
-                    <strong>No. Invoice:</strong>
-                    {{ $order->order_number }}
-                    <br />
-                    <strong>Tanggal:</strong>
-                    {{ $order->created_at->format('d F Y') }}
-                    <br />
-                    <strong>Status:</strong>
-                    <span class="status-badge status-{{ $order->payment_status === 'verified' ? 'paid' : 'pending' }}">
-                        {{ $order->payment_status_label }}
-                    </span>
+                    <div>
+                        <strong>No. Invoice:</strong>
+                        {{ $order->order_number }}
+                    </div>
+                    <div>
+                        <strong>Tanggal:</strong>
+                        {{ $order->created_at->format('d F Y') }}
+                    </div>
+                    <div>
+                        <strong>Status:</strong>
+                        <span
+                            class="status-badge status-{{ $order->payment_status === 'verified' ? 'paid' : 'pending' }}"
+                        >
+                            {{ $order->payment_status_label }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Customer & Shipping Info -->
         <div class="section">
             <div class="section-title">Informasi Pelanggan & Pengiriman</div>
             <div class="info-grid">
@@ -313,7 +382,6 @@
             </div>
         </div>
 
-        <!-- Order Items -->
         <div class="section">
             <div class="section-title">Detail Pesanan</div>
             <table>
@@ -362,7 +430,6 @@
             </table>
         </div>
 
-        <!-- Totals -->
         <div class="totals">
             <div class="total-row">
                 <span class="total-label">Subtotal Produk:</span>
@@ -382,7 +449,6 @@
             </div>
         </div>
 
-        <!-- Notes -->
         @if ($order->notes)
             <div class="notes">
                 <div class="notes-title">📝 Catatan Pesanan</div>
@@ -390,7 +456,6 @@
             </div>
         @endif
 
-        <!-- Footer -->
         <div class="footer">
             <p><strong>Terima kasih atas kepercayaan Anda!</strong></p>
             <p>Invoice ini dibuat secara otomatis dan sah tanpa tanda tangan.</p>

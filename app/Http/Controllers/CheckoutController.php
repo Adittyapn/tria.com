@@ -8,11 +8,15 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Services\RajaOngkirService;
+use App\Mail\NewOrderNotification as NewOrderEmail;
+use App\Notifications\NewOrderNotification as NewOrderBellNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class CheckoutController extends Controller
@@ -148,6 +152,44 @@ class CheckoutController extends Controller
                 'user_agent' => $request->userAgent(),
                 'has_tracking_token' => !empty($order->tracking_token)
             ]);
+
+            // 📧 Send email notification to admin
+            try {
+                $adminEmail = config('mail.admin_email', 'admin@tria.com');
+                
+                // Eager load relationships before sending email
+                $order->load(['customer', 'items.product']);
+                
+                Mail::to($adminEmail)->send(new NewOrderEmail($order));
+                
+                Log::info('Admin notification sent', [
+                    'order_number' => $order->order_number,
+                    'admin_email' => $adminEmail
+                ]);
+            } catch (\Exception $e) {
+                // Log error but don't fail the order
+                Log::error('Failed to send admin notification', [
+                    'order_number' => $order->order_number,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
+            // 🔔 Send database notification to all admin users
+            try {
+                $adminUsers = \App\Models\User::all(); // Or filter by role if you have admin role
+                
+                Notification::send($adminUsers, new NewOrderBellNotification($order));
+                
+                Log::info('Bell notification sent to admins', [
+                    'order_number' => $order->order_number,
+                    'admin_count' => $adminUsers->count()
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to send bell notification', [
+                    'order_number' => $order->order_number,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

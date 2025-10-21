@@ -19,22 +19,6 @@
             white-space: nowrap;
             text-overflow: ellipsis;
         }
-
-        /* Upload progress animation */
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .toast-notification {
-            animation: slideInRight 0.3s ease-out;
-        }
     </style>
 @endpush
 

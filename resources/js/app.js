@@ -7,6 +7,6 @@ import "./chart-rupiah-formatter";
 // Pastikan Alpine.js dari Livewire sudah tersedia
 document.addEventListener("DOMContentLoaded", function () {
     if (window.Alpine) {
-        console.log("Alpine.js loaded via Livewire");
+        // console.log("Alpine.js loaded via Livewire");
     }
 });

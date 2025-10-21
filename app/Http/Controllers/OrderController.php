@@ -332,8 +332,9 @@ class OrderController extends Controller
             $uploadLog = "\n\n[UPLOAD BUKTI PEMBAYARAN - " . now()->format('d/m/Y H:i:s') . "]";
             $uploadLog .= "\nFile: " . $filename;
             $uploadLog .= "\nIP: " . $request->ip();
-            if ($request->input('payment_notes')) {
-                $uploadLog .= "\nCatatan: " . $request->input('payment_notes');
+            $paymentNotes = trim((string) $request->input('payment_notes', ''));
+            if (!empty($paymentNotes)) {
+                $uploadLog .= "\nCatatan: " . $paymentNotes;
             }
 
             $order->update([
@@ -398,8 +399,8 @@ class OrderController extends Controller
 
         // ✅ Different messages for secure vs legacy orders
         if ($order->hasSecureTracking()) {
-            $message = 'Order ini memerlukan link tracking dari email konfirmasi. Atau verifikasi dengan email Anda:';
-            $helpText = 'Link tracking dikirim ke email saat order dibuat. Cek folder Spam jika tidak ditemukan.';
+            $message = 'Verifikasi email Anda untuk melihat tracking order:';
+            $helpText = 'Gunakan email yang sama dengan saat membuat pesanan.';
         } else {
             $message = 'Masukkan email untuk melihat tracking order:';
             $helpText = 'Gunakan email yang sama dengan saat membuat pesanan.';
