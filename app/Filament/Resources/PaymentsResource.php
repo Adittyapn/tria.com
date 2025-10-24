@@ -30,7 +30,7 @@ class PaymentsResource extends Resource
                     ->reactive()
                     ->afterStateUpdated(function ($state, callable $set) {
                         if ($state) {
-                            $order = \App\Models\Orders::find($state);
+                            $order = \App\Models\Order::find($state);
                             if ($order) {
                                 $set('amount', $order->total_amount); // otomatis ambil total amount
                             }

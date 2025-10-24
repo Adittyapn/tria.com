@@ -80,54 +80,14 @@
                         </p>
                     </div>
 
-                    <!-- Product Specifications -->
-                    <div
-                        class="text-white px-3 py-1 rounded inline-block text-sm font-semibold"
-                        style="background-color: #000334"
-                    >
-                        SPESIFIKASI PRODUK DAN AREA CETAK
-                    </div>
-                    <div class="space-y-2 text-sm text-gray-700">
-                        <div class="flex">
-                            <span class="font-medium w-32">JENIS BAHAN</span>
-                            <span class="mr-2">:</span>
-                            <span>CROMO</span>
+                    @if ($product->description)
+                        <div class="text-white px-3 py-1 rounded inline-block" style="background-color: #000334">
+                            <h3 class="text-sm font-semibold">Deskripsi Lengkap</h3>
                         </div>
-                        <div class="flex">
-                            <span class="font-medium w-32">FINISHING</span>
-                            <span class="mr-2">:</span>
-                            <span>KISSCUT</span>
+                        <div class="text-gray-700 text-sm leading-relaxed">
+                            <p>{!! $product->description !!}</p>
                         </div>
-                        <div class="flex">
-                            <span class="font-medium w-32">HASIL CETAK</span>
-                            <span class="mr-2">:</span>
-                            <span>CMYK</span>
-                        </div>
-                    </div>
-
-                    <!-- Material Explanation -->
-                    <div
-                        class="text-white px-3 py-1 rounded inline-block text-sm font-semibold"
-                        style="background-color: #000334"
-                    >
-                        PENJELASAN JENIS BAHAN :
-                    </div>
-                    <div class="space-y-3 text-sm text-gray-700">
-                        <h4 class="font-semibold text-gray-900">Sticker CROMO</h4>
-                        <p>
-                            *Yaitu stiker yang berbahan dasar kertas dan lebih murah. Stiker cromo cocok untuk label
-                            kemasan makanan kering dan tidak disarankan untuk makan basah atau disimpan dalam kulkas.
-                        </p>
-                        <p>
-                            *Kelebihan stiker ini adalah dapat dicetak full color karena stiker ini cara pembuatannya
-                            hanya didesain dikomputer lalu diprint, harganya pun sangat murah dan terjangkau.
-                        </p>
-                        <p>
-                            *Kelemahan stiker ini jika sudah tertempel pada kertas atau plastik dalam waktu lama susah
-                            sekali untuk mengelupas atau memindahkannya ke permukaan benda lain. Stiker Cromo jika
-                            terkena air juga akan mudah rusak dan tidak tahan gores.
-                        </p>
-                    </div>
+                    @endif
 
                     <!-- Notes -->
                     <div
@@ -137,7 +97,6 @@
                         CATATAN :
                     </div>
                     <div class="space-y-2 text-sm text-gray-700">
-                        <p class="font-medium">PENGERJAAN 1 HARI BERES BISA DI TUNGGU</p>
                         <p class="font-medium">FILE DI WAJIBKAN MENGGUNAKAN CDR/AI/PNG/VEKTOR</p>
                     </div>
                 </div>
@@ -166,20 +125,42 @@
                     <p class="text-lg text-gray-600">{{ $product->short_description }}</p>
                 @endif
 
-                <!-- Pricing System Info -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div class="flex items-center space-x-2 mb-2">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            ></path>
-                        </svg>
-                        <span class="font-semibold text-blue-800">{{ $product->getPricingTypeLabel() }}</span>
+                @php
+                    // Localized pricing type label
+                    $localizedPricingLabel =
+                        $product->pricing_type === 'per_meter_square'
+                            ? 'Per Meter Persegi (m²)'
+                            : ($product->pricing_type === 'per_meter_linear'
+                                ? 'Per Meter Linear (m)'
+                                : $product->getPricingTypeLabel());
+                @endphp
+
+                <!-- Clean Pricing Card (prominently displayed) -->
+                <div class="flex items-center justify-between bg-white border rounded-lg p-4 shadow-sm">
+                    <div class="flex-1 pr-4">
+                        <div class="text-sm font-semibold text-gray-700">{{ $localizedPricingLabel }}</div>
+                        @if ($product->pricing_description)
+                            <div class="text-sm text-gray-500 mt-1">{{ $product->pricing_description }}</div>
+                        @endif
                     </div>
-                    <p class="text-blue-700 text-sm">{{ $product->pricing_description }}</p>
+
+                    <div class="text-right flex-shrink-0">
+                        <div class="text-sm text-gray-500">Harga dasar</div>
+                        <div
+                            class="text-2xl font-bold text-red-600"
+                            x-text="formatPrice(productData.basePrice)"
+                        ></div>
+                        <div
+                            class="text-sm text-gray-600 mt-0.5"
+                            x-text="
+                                productData.pricingType === 'per_meter_square'
+                                    ? '/ m²'
+                                    : productData.pricingType === 'per_meter_linear'
+                                      ? '/ m'
+                                      : ''
+                            "
+                        ></div>
+                    </div>
                 </div>
 
                 <!-- Custom Size Component -->

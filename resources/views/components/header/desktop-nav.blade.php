@@ -12,15 +12,24 @@
         </svg>
         Beranda
     </a>
-    <a href="/product/spanduk" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">
-        Spanduk
+    <a href="/product/banner-draptek" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">
+        Banner Outdoor
     </a>
-    <a href="#" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">Banner</a>
-    <a href="#" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">Akrilk</a>
-    <a href="#" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">Tumbler</a>
-    <a href="#" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">Plakat</a>
-    <a href="#" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">Kartu Nama</a>
-    <a href="#" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">Buku</a>
+    <a
+        href="/product/frame-poster-akrilik-a2"
+        class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors"
+    >
+        Frame Poster Akrilik
+    </a>
+    <a href="/product/tumbler" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">
+        Tumbler
+    </a>
+    <a href="/product/plakat-custom" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">
+        Plakat Custom
+    </a>
+    <a href="/product/kartu-nama" class="text-gray-600 hover:text-orange-500 whitespace-nowrap transition-colors">
+        Kartu Nama
+    </a>
     <a
         href="{{ route('public.track.index') }}"
         class="text-gray-700 hover:text-orange-500 whitespace-nowrap font-medium transition-colors flex items-center"

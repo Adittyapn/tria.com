@@ -22,12 +22,12 @@
                 </div>
 
                 <!-- Title -->
-                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 tracking-wide">
+                <h1 class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 tracking-wide leading-tight">
                     Lacak <span class="text-blue-200">Pesanan</span> Anda
                 </h1>
 
                 <!-- Subtitle -->
-                <p class="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
+                <p class="text-base sm:text-lg md:text-2xl text-blue-100 mb-8 leading-relaxed">
                     Pantau status pengiriman dan perkembangan pesanan Anda dengan mudah
                 </p>
             </div>
@@ -70,8 +70,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h2 class="text-lg font-semibold text-gray-900">Cari Pesanan Anda</h2>
-                        <p class="text-sm text-gray-600">Masukkan nomor pesanan untuk melihat detail pengiriman</p>
+                        <h2 class="text-base sm:text-lg md:text-xl font-semibold text-gray-900">Cari Pesanan Anda</h2>
+                        <p class="text-xs sm:text-sm md:text-base text-gray-600">Masukkan nomor pesanan untuk melihat detail pengiriman</p>
                     </div>
                 </div>
             </div>
@@ -95,7 +95,7 @@
                                 name="order_number"
                                 value="{{ old('order_number', request('order')) }}"
                                 placeholder="Contoh: DP-20251002-001"
-                                class="block w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 input-focus pl-4 pr-12 py-4 text-lg font-medium shadow-sm"
+                                class="block w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 input-focus pl-4 pr-12 py-3 text-base sm:text-lg font-medium shadow-sm"
                                 required
                             />
                             <div class="absolute inset-y-0 right-0 flex items-center pr-4">
@@ -118,7 +118,7 @@
                     <div class="pt-4">
                         <button
                             type="submit"
-                            class="w-full inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 btn-hover shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200"
+                            class="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-base sm:text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 btn-hover shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200"
                         >
                             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>

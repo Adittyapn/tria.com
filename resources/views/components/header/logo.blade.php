@@ -5,6 +5,6 @@
     </div>
     <div>
         <h1 class="text-2xl font-bold text-gray-800">TRIA DIGITAL</h1>
-        <p class="text-xs" style="color: #ff7900">Digital Printing Solution</p>
+        <p class="text-xs" style="color: #ff7900">Digital Printing Solutions</p>
     </div>
 </a>

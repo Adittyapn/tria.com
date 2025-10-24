@@ -24,53 +24,39 @@
             <span class="text-sm text-gray-700">Beranda</span>
         </a>
         <a
-            href="#"
+            href="/product/banner-draptek"
             class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
             @click="mobileMenuOpen = false"
         >
-            <span class="text-sm">Stiker</span>
+            <span class="text-sm">Banner Outdoor</span>
         </a>
         <a
-            href="#"
+            href="/product/frame-poster-akrilik-a2"
             class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
             @click="mobileMenuOpen = false"
         >
-            <span class="text-sm">Banner</span>
+            <span class="text-sm">Frame Poster Akrilik</span>
         </a>
         <a
-            href="#"
-            class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-            @click="mobileMenuOpen = false"
-        >
-            <span class="text-sm">Akrilk</span>
-        </a>
-        <a
-            href="#"
+            href="/product/tumbler"
             class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
             @click="mobileMenuOpen = false"
         >
             <span class="text-sm">Tumbler</span>
         </a>
         <a
-            href="#"
+            href="/product/plakat-custom"
             class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
             @click="mobileMenuOpen = false"
         >
-            <span class="text-sm">Plakat</span>
+            <span class="text-sm">Plakat Custom</span>
         </a>
         <a
-            href="#"
+            href="/product/kartu-nama"
             class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
             @click="mobileMenuOpen = false"
         >
             <span class="text-sm">Kartu Nama</span>
-        </a>
-        <a
-            href="#"
-            class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
-            @click="mobileMenuOpen = false"
-        >
-            <span class="text-sm">Buku</span>
         </a>
     </nav>
 
@@ -140,7 +126,7 @@
                 @role('customer')
                     <!-- Customer Menu -->
                     <a
-                        href="/orders"
+                        href="/dashboard/my-orders"
                         class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-sm text-gray-700"
                         @click="mobileMenuOpen = false"
                     >
@@ -162,9 +148,32 @@
                     </a>
                 @endrole
 
+                <!-- Lacak Pesanan -->
+                <a
+                    href="/track-order"
+                    class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-sm text-gray-700"
+                    @click="mobileMenuOpen = false"
+                >
+                    <svg
+                        class="w-4 h-4 mr-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        style="color: #000334"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                    </svg>
+                    Lacak Pesanan
+                </a>
+
                 <!-- Common Menu Items -->
                 <a
-                    href="/profile"
+                    href="/dashboard/my-profile"
                     class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors text-sm text-gray-700"
                     @click="mobileMenuOpen = false"
                 >

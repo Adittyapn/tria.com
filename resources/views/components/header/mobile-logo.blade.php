@@ -1,14 +1,8 @@
 <!-- Mobile Logo -->
 <a href="/" class="flex items-center space-x-2">
-    <div class="bg-gray-100 p-1.5 rounded">
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" style="color: #000334">
-            <path
-                d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-            />
-        </svg>
-    </div>
+    <img src="/images/logo-tria-potrait.svg" alt="logo-tria" class="h-7 w-auto" />
     <div>
-        <h1 class="text-lg font-bold leading-none text-gray-800">TRIA</h1>
-        <p class="text-xs leading-none" style="color: #ff7900">Digital</p>
+        <h1 class="text-lg font-bold leading-none text-gray-800">TRIA DIGITAL</h1>
+        <p class="text-xs leading-none" style="color: #ff7900">Digital Printing Solutions</p>
     </div>
 </a>

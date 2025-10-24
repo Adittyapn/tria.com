@@ -48,7 +48,7 @@
             @role('customer')
                 <!-- Customer Menu -->
                 <a
-                    href="/dashboard/orders"
+                    href="/dashboard/my-orders"
                     class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                     <svg

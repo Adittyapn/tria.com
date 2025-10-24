@@ -48,7 +48,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             <template x-for="product in filteredProducts" :key="product.id">
                 <div
-                    class="card card-hover cursor-pointer overflow-hidden"
+                    class="card card-hover cursor-pointer overflow-hidden flex flex-col"
                     @click="window.location.href = `/product/${product.slug}`"
                 >
                     <div class="relative">
@@ -59,34 +59,36 @@
                             </span>
                         </div>
                     </div>
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-2">
-                            <span
-                                class="text-xs font-medium text-brand-orange uppercase tracking-wide"
-                                x-text="product.category_name"
-                            ></span>
-                            <div class="flex items-center">
-                                <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                    />
-                                </svg>
-                                <span class="text-xs text-gray-500">4.9</span>
-                            </div>
-                        </div>
-                        <h3 class="font-bold text-navy-900 text-lg mb-2 line-clamp-2" x-text="product.name"></h3>
-                        <p class="text-gray-600 text-sm mb-4 line-clamp-2" x-text="product.short_description"></p>
-                        <div class="flex items-center justify-between">
-                            <div>
+                    <div class="p-6 flex flex-col flex-1 justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
                                 <span
-                                    class="text-lg font-bold text-navy-900"
-                                    x-text="product.price_formatted"
+                                    class="text-xs font-medium text-brand-orange uppercase tracking-wide"
+                                    x-text="product.category_name"
                                 ></span>
-                                <span
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                        />
+                                    </svg>
+                                    <span class="text-xs text-gray-500">4.9</span>
+                                </div>
+                            </div>
+                            <h3 class="font-bold text-navy-900 text-lg mb-2 line-clamp-2" x-text="product.name"></h3>
+                            <p
+                                class="text-gray-600 text-sm mb-4 line-clamp-2"
+                                x-text="product.short_description"
+                            ></p>
+                        </div>
+                        <div class="flex items-center justify-between mt-auto pt-2">
+                            <div>
+                                <p class="text-lg font-bold text-orange-600" x-text="product.price_formatted"></p>
+                                <p
                                     x-show="product.promo_price"
                                     class="text-sm text-gray-500 line-through ml-2"
                                     x-text="product.original_price_formatted"
-                                ></span>
+                                ></p>
                             </div>
                         </div>
                     </div>
@@ -100,41 +102,47 @@
         </div>
     </div>
 
+    @php
+        $__products_for_js = $products
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'short_description' => $product->short_description,
+                    'product_type' => $product->product_type,
+                    'category_name' => $product->category->name ?? '',
+                    'featured_image' => asset('storage/' . $product->featured_image),
+                    'price_formatted' => 'Rp ' . number_format($product->promo_price ?? $product->base_price, 0, ',', '.'),
+                    'original_price_formatted' => 'Rp ' . number_format($product->base_price, 0, ',', '.'),
+                    'promo_price' => (bool) $product->promo_price,
+                    'show' => true,
+                ];
+            })
+            ->toArray();
+    @endphp
+
     <script>
         function productFilter() {
             return {
                 activeProductType: 'all',
-                products: [
-                    @foreach($products as $product)
-                    {
-                        id: {{ $product->id }},
-                        name: '{{ $product->name }}',
-                        slug: '{{ $product->slug }}',
-                        short_description: '{{ $product->short_description }}',
-                        product_type: '{{ $product->product_type }}',
-                        category_name: '{{ $product->category->name ?? '' }}',
-                        featured_image: '{{ asset('storage/' . $product->featured_image) }}',
-                        price_formatted: 'Rp {{ number_format($product->promo_price ?? $product->base_price, 0, ',', '.') }}',
-                        original_price_formatted: 'Rp {{ number_format($product->base_price, 0, ',', '.') }}',
-                        promo_price: {{ $product->promo_price ? 'true' : 'false' }},
-                        show: true
-                    }@if(!$loop->last),@endif
-                    @endforeach
-                ],
+                products: @json($__products_for_js),
                 displayedProducts: 8,
                 get filteredProducts() {
-                    let filtered = this.products.filter(product =>
-                        this.activeProductType === 'all' || product.product_type === this.activeProductType
+                    let filtered = this.products.filter(
+                        (product) =>
+                            this.activeProductType === 'all' || product.product_type === this.activeProductType,
                     );
 
-                    return filtered.slice(0, this.displayedProducts).map(product => ({
+                    return filtered.slice(0, this.displayedProducts).map((product) => ({
                         ...product,
-                        show: true
+                        show: true,
                     }));
                 },
                 get hasMoreProducts() {
-                    let filtered = this.products.filter(product =>
-                        this.activeProductType === 'all' || product.product_type === this.activeProductType
+                    let filtered = this.products.filter(
+                        (product) =>
+                            this.activeProductType === 'all' || product.product_type === this.activeProductType,
                     );
                     return filtered.length > this.displayedProducts;
                 },
@@ -144,7 +152,7 @@
                 },
                 loadMoreProducts() {
                     this.displayedProducts += 8;
-                }
+                },
             };
         }
     </script>

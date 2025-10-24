@@ -573,6 +573,55 @@ function productDetail() {
             this.errors.customSize = "";
         },
 
+        // Calculate custom size (area or linear length) and validate inputs
+        calculateCustomSize() {
+            // Clear previous error
+            this.errors.customSize = "";
+
+            // Normalize values
+            const length = parseFloat(this.customLength) || 0;
+            const width = parseFloat(this.customWidth) || 0;
+
+            // If a preset was selected but user starts typing custom sizes, clear preset
+            if (length > 0 || width > 0) {
+                this.selectedPreset = null;
+                this.presetMultiplier = 1;
+            }
+
+            if (this.productData.pricingType === "per_meter_square") {
+                // Need both length and width
+                if (
+                    !isFinite(length) ||
+                    !isFinite(width) ||
+                    length <= 0 ||
+                    width <= 0
+                ) {
+                    this.totalMeters = 0;
+                    this.errors.customSize =
+                        "Harap masukkan panjang dan lebar yang valid";
+                    this.calculateVolumeDiscount();
+                    return;
+                }
+
+                // Calculate total area in square meters
+                this.totalMeters = parseFloat((length * width).toFixed(3));
+            } else if (this.productData.pricingType === "per_meter_linear") {
+                if (!isFinite(length) || length <= 0) {
+                    this.totalMeters = 0;
+                    this.errors.customSize =
+                        "Harap masukkan panjang yang valid";
+                    this.calculateVolumeDiscount();
+                    return;
+                }
+
+                // For linear pricing we treat totalMeters as the linear meter value
+                this.totalMeters = parseFloat(length.toFixed(3));
+            }
+
+            // Recalculate volume discounts / totals
+            this.calculateVolumeDiscount();
+        },
+
         // ===============================
         // RECOMMENDED PRODUCTS
         // ===============================

@@ -31,8 +31,6 @@ class AdminStatsOverview extends BaseWidget
             $totalRevenue = Order::where('payment_status', 'verified')->sum('subtotal_items') ?? 0;
             $totalOrders = Order::count() ?? 0;
             $totalCustomers = Customer::count() ?? 0;
-            $pendingOrders = Order::where('payment_status', 'pending')->count() ?? 0;
-            $totalProducts = Product::count() ?? 0;
             $activeProducts = Product::where('is_active', true)->count() ?? 0;
             
             // Monthly comparison

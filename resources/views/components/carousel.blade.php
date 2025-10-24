@@ -181,7 +181,7 @@
                                         </div>
 
                                         <!-- Products Grid -->
-                                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 gap-3 lg:gap-4 pb-4">
+                                        <div class="grid grid-cols-2 gap-3 lg:gap-2 pb-4">
                                             @if (isset($slide['rightContent']['products']))
                                                 @foreach ($slide['rightContent']['products'] as $productIndex => $product)
                                                     <div
@@ -197,7 +197,7 @@
                                                             />
 
                                                             <!-- Discount Badge -->
-                                                            @if (isset($product['discount']))
+                                                            @if (isset($product['promo_price']) && $product['promo_price'] && isset($product['discount']))
                                                                 <div class="absolute top-2 left-2">
                                                                     <span
                                                                         class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg"
@@ -230,9 +230,11 @@
                                                                 <span
                                                                     class="text-brand-orange font-bold text-sm lg:text-base"
                                                                 >
-                                                                    {{ $product['price'] }}
+                                                                    Rp
+                                                                    {{ number_format((float) preg_replace('/[^0-9.]/', '', $product['price']), 0, ',', '.') }}
                                                                 </span>
-                                                                <button
+                                                                <a
+                                                                    href="/product/{{ $product['slug'] ?? '' }}"
                                                                     class="bg-brand-orange bg-opacity-20 text-brand-orange p-1.5 rounded-lg hover:bg-brand-orange hover:text-white transition-colors"
                                                                 >
                                                                     <svg
@@ -248,7 +250,7 @@
                                                                             d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                                                                         />
                                                                     </svg>
-                                                                </button>
+                                                                </a>
                                                             </div>
                                                         </div>
                                                     </div>

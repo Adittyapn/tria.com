@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Activitylog\Models\Activity;
 use App\Services\RajaOngkirService;
+use App\Observers\ProductObserver;
+use App\Models\Product;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +40,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Register model observers
+        Product::observe(ProductObserver::class);
+
         $this->configurePolicies();
 
         $this->configureDB();
